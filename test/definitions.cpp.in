@@ -1,0 +1,3 @@
+#include "definitions.h"
+
+std::string RESOURCE_PATH("@RES_DIR@");

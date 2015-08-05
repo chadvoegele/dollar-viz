@@ -1,0 +1,179 @@
+/*
+ * Copyright (c) 2015 Chad Voegele
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ *  * The name of Chad Voegele may not be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+.typeahead,
+.tt-query,
+.tt-hint {
+  width: 100% !important;
+  height: 30px;
+  padding: 8px 8px;
+  font-size: 16px;
+  line-height: 30px;
+  border: 2px solid #ccc;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  outline: none;
+}
+
+.typeahead {
+  background-color: #fff;
+}
+
+.typeahead:focus {
+  border: 2px solid #0097cf;
+}
+
+.tt-query {
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.tt-hint {
+  color: #999
+}
+
+.tt-menu {
+  width: 102%;
+  margin: 12px 0;
+  padding: 8px 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+  padding: 3px 20px;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.tt-suggestion:hover {
+  cursor: pointer;
+  color: #fff;
+  background-color: #0097cf;
+}
+
+.tt-suggestion.tt-cursor {
+  color: #fff;
+  background-color: #0097cf;
+
+}
+
+.tt-suggestion p {
+  margin: 0;
+}
+
+.twitter-typeahead {
+  width: 97%;
+}
+
+.tt-dropdown-menu {
+  width: 102%;
+}
+
+.well {
+  margin-bottom: 5px;
+}
+
+#the_graph {
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+}
+
+.tick {
+  stroke: lightgrey;
+  stroke-opacity: 0.4;
+}
+
+.tick_text {
+  stroke: none;
+  fill: #000000
+}
+
+.label_text {
+  stroke: none;
+  fill: #000000
+}
+
+#diff_path_below {
+  fill: green;
+  fill-opacity: 0.1
+}
+
+#diff_path_above {
+  fill: red;
+  fill-opacity: 0.1
+}
+
+.line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 2;
+  stroke-opacity: 0.9;
+}
+
+.budget_line {
+  stroke: darkblue;
+}
+
+.register_line {
+  stroke: #202020;
+}
+
+.border_rect {
+  stroke: #cbcbcb;
+  stroke-width: 2;
+  fill-opacity: 0;
+}
+
+.yaxis {
+  stroke: #000000;
+  fill: none;
+  shape-rendering: crispEdges;
+}
+
+.xaxis {
+  stroke: #000000;
+  fill: none;
+  shape-rendering: crispEdges;
+}
+
+.legend_rect {
+  stroke: darkgrey;
+  stroke-width: 0.5;
+  fill: #ffffff;
+  fill-opacity: 0.8;
+}

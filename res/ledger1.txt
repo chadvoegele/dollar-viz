@@ -1,0 +1,79 @@
+~Monthly
+  assets:cash
+  expenses:fun   $200
+
+2015/01/15 payee
+  assets:cash   -$10
+  expenses:fun   $10
+
+2015/05/15 payee
+  assets:cash   -$10
+  expenses:fun   $10
+
+2015/05/16 movie
+  assets:cash   -$10
+  expenses:fun   $10
+
+2015/05/17 book
+  assets:cash   -$20
+  expenses:books   $20
+
+2015/05/18 payee
+  assets:cash   -$10
+  expenses:fun   $10
+
+2015/05/19 payee
+  assets:cash   -$20
+  expenses:fun   $20
+
+2015/05/20 payee
+  assets:cash   -$20
+  expenses:fun   $20
+
+2015/06/15 payee
+  assets:cash   -$10
+  expenses:fun   $10
+
+2015/06/16 payee
+  assets:cash   -$10
+  expenses:fun   $10
+
+2015/06/17 payee
+  assets:cash   -$20
+  expenses:fun   $20
+
+2015/06/18 payee
+  assets:cash   -$10
+  expenses:fun   $10
+
+2015/06/19 payee
+  assets:cash   -$20
+  expenses:fun   $20
+
+2015/06/20 gokart
+  assets:cash   -$20
+  expenses:fun   $20
+
+2015/07/15 game
+  assets:cash   -$10
+  expenses:fun   $10
+
+2015/07/16 book
+  assets:cash   -$10
+  expenses:fun   $10
+
+2015/07/17 movie
+  assets:cash   -$20
+  expenses:movie   $20
+
+2015/07/18 payee
+  assets:cash   -$10
+  expenses:fun   $10
+
+2015/07/19 payee
+  assets:cash   -$20
+  expenses:fun   $20
+
+2015/07/20 payee
+  assets:cash   -$20
+  expenses:fun   $20
