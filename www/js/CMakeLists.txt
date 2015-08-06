@@ -1,4 +1,4 @@
-find_program(CLOSURE_BIN closure)
+find_program(CLOSURE_BIN NAMES closure closure-compiler)
 
 set(JS_SRC cache.js chart.js ChartRequest.js data.js
   LedgerRequest.js plot.js)

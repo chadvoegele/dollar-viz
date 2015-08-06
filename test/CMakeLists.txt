@@ -8,7 +8,7 @@ include(../cmake/find_microhttpd.cmake)
 find_library(CURL_LIB NAMES "libcurl.so" PATHS "/usr/lib")
 find_path(CURL_INCLUDE NAMES "curl/curl.h")
 
-find_library(GTEST_LIB NAMES "libgtest.so" PATHS "/usr/lib")
+find_library(GTEST_LIB NAMES "libgtest.so" "libgtest.a" PATHS "/usr/lib")
 find_path(GTEST_INCLUDE NAMES "gtest/gtest.h")
 
 find_package(Threads)
