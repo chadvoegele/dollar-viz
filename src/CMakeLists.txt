@@ -23,7 +23,7 @@ add_library(${PROJECT_NAME} STATIC
   file_reader.cpp args.cpp ledger_rest_args.cpp mhd_args.cpp
   file_responder.cpp signal_handler.cpp)
 set_cpp11(${PROJECT_NAME})
-target_link_libraries(${PROJECT_NAME} ${LIB_LEDGER_REST_NAME} ${LEDGER_LIB} ${GNUTLS_LIB})
+target_link_libraries(${PROJECT_NAME} ${LIB_LEDGER_REST_NAME} ${LEDGER_LIB} ${GNUTLS_LIB} ${Boost_LIBRARIES})
 
 set(EXE_TARGET "${PROJECT_NAME}-bin")
 add_executable(${EXE_TARGET} main.cpp)
