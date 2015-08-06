@@ -39,7 +39,7 @@ function setup_page() {
   setup_datepicker();
   setup_graph();
   setup_more_options_collapse();
-  window.onresize = function() { resize_reload_graph(); };
+  window.onresize = function() { resize_graph(); };
 }
 
 function setup_typeahead() {
@@ -104,16 +104,16 @@ function setup_more_options_collapse() {
       this.text = "More options \u25C0";
   };
   $("#collapse_more_options").on("hidden.bs.collapse", function() {
-    resize_reload_graph();
+    resize_graph();
   });
   $("#collapse_more_options").on("shown.bs.collapse", function() {
-    resize_reload_graph();
+    resize_graph();
   });
 }
 
-function resize_reload_graph() {
+function resize_graph() {
   setup_graph();
-  update_timeout();
+  plot_register();
 }
 
 function plot_callback(filter_chain, convos) {
