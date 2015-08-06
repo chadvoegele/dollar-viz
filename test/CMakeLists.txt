@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 2.6)
 
 set(PROJECT_TEST_NAME "${PROJECT_NAME}_tests")
 
