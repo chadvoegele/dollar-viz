@@ -39,6 +39,7 @@ namespace budget_charts {
       virtual ~file_responder() { }
 
     private:
+      virtual http::response respond_or_throw(http::request request);
       ::ledger_rest::logger& logger;
   };
 }
