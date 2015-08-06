@@ -35,7 +35,6 @@ namespace budget_charts {
       virtual bool get_secure() = 0;
       virtual int get_port() = 0;
       virtual std::string get_key() = 0;
-      virtual std::string get_key_pass() = 0;
       virtual std::string get_cert() = 0;
       virtual std::string get_client_cert() = 0;
       virtual std::unordered_map<std::string, std::string> get_user_pass() = 0;

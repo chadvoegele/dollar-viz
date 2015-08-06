@@ -56,7 +56,6 @@ namespace budget_charts {
       const bool secure;
       const int port;
       const std::string key;
-      const std::string key_pass;
       const std::string cert;
       const std::string client_cert;
       const std::unordered_map<std::string, std::string> user_pass;
@@ -104,5 +103,6 @@ namespace budget_charts {
           const char* value);
       template<typename K, typename T>
         static std::map<K, T> convert_map(std::multimap<K, T> mmap);
+      std::string get_password();
   };
 }

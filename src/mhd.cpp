@@ -29,6 +29,9 @@
 #include <cstring>
 #include <climits>
 #include <sstream>
+#include <iostream>
+#include <termios.h>
+#include <sys/unistd.h>
 
 #include "mhd.h"
 
@@ -36,7 +39,7 @@ namespace budget_charts {
   mhd::mhd(mhd_args& args, ::ledger_rest::logger& logger,
       ::budget_charts::responder& responder)
     : logger(logger), responder(responder), secure(args.get_secure()), port(args.get_port()),
-      key(args.get_key()), key_pass(args.get_key_pass()), cert(args.get_cert()),
+      key(args.get_key()), cert(args.get_cert()),
       client_cert(args.get_client_cert()), user_pass(args.get_user_pass()) {
     start_daemon(&daemon);
     if (NULL == daemon) {
@@ -77,11 +80,17 @@ namespace budget_charts {
 
   void mhd::start_daemon(struct MHD_Daemon** d) {
     if (secure) {
+#if MHD_VERSION >= 0x00094001
+      std::string key_pass(get_password());
+#endif
+
       *d = MHD_start_daemon(MHD_USE_SSL,
           port, NULL, NULL,
           &answer_callback_auth, this,
           MHD_OPTION_HTTPS_MEM_CERT, cert.c_str(),
+#if MHD_VERSION >= 0x00094001
           MHD_OPTION_HTTPS_KEY_PASSWORD, key_pass.c_str(),
+#endif
           MHD_OPTION_HTTPS_MEM_KEY, key.c_str(),
           MHD_OPTION_HTTPS_CRED_TYPE, GNUTLS_CRD_CERTIFICATE,
           MHD_OPTION_HTTPS_MEM_TRUST, client_cert.c_str(),
@@ -331,5 +340,22 @@ namespace budget_charts {
     http::request request(std::string(method), std::string(url),
         headers, uri_args);
     return request;
+  }
+
+
+  std::string mhd::get_password() {
+    std::cout << "Enter key password: " << std::endl;
+    struct termios old_term, new_term;
+
+    tcgetattr(STDIN_FILENO, &old_term);
+    new_term = old_term;
+    new_term.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
+
+    std::string pass;
+    std::cin >> pass;
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_term);
+    return pass;
   }
 }

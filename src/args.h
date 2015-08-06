@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include <cstdio>
 #include <string>
 #include <unordered_map>
 #include <argp.h>
@@ -45,7 +46,6 @@ namespace budget_charts {
       virtual std::string get_ledger_file_path();
       virtual std::string get_ledger_rest_prefix();
       virtual std::string get_key();
-      virtual std::string get_key_pass();
       virtual std::string get_cert();
       virtual std::string get_client_cert();
       virtual std::unordered_map<std::string, std::string> get_user_pass();
@@ -54,7 +54,6 @@ namespace budget_charts {
       static error_t parse_opt(int key, char *arg, struct argp_state *state);
       static std::unordered_map<std::string, std::string> load_user_pass(std::string user_pass_file);
       void verify_options();
-      std::string get_password();
 
       struct arguments {
         bool secure;
@@ -63,7 +62,6 @@ namespace budget_charts {
         std::string ledger_file_path;
         std::string ledger_rest_prefix;
         std::string key;
-        std::string key_pass;
         std::string cert;
         std::string client_cert;
         std::unordered_map<std::string, std::string> user_pass;

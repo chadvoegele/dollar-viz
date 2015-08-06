@@ -25,12 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include <cstdio>
 #include <stdexcept>
 #include <list>
-#include <iostream>
-#include <termios.h>
-#include <sys/unistd.h>
 
 #include "args.h"
 #include "file_reader.h"
@@ -71,10 +67,6 @@ namespace budget_charts {
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
     verify_options();
-
-    if (arguments.secure) {
-      arguments.key_pass = get_password();
-    }
   }
 
   error_t args::parse_opt(int key, char *arg, struct argp_state *state) {
@@ -190,10 +182,6 @@ namespace budget_charts {
     return arguments.key;
   }
 
-  std::string args::get_key_pass() {
-    return arguments.key_pass;
-  }
-
   std::string args::get_cert() {
     return arguments.cert;
   }
@@ -234,20 +222,5 @@ namespace budget_charts {
     }
     return userpass;
   }
-
-  std::string args::get_password() {
-    std::cout << "Enter key password: " << std::endl;
-    struct termios old_term, new_term;
-
-    tcgetattr(STDIN_FILENO, &old_term);
-    new_term = old_term;
-    new_term.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
-
-    std::string pass;
-    std::cin >> pass;
-
-    tcsetattr(STDIN_FILENO, TCSANOW, &old_term);
-    return pass;
-  }
 }
+
