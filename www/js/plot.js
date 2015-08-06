@@ -297,13 +297,12 @@ function plot_legend(svg_offset, config, data, computed) {
 
     var label_line = append_if_missing(legend_g, "rect", "label_line" + i);
     label_line
-    .attr("class", "label_line")
+    .attr("class", ["label_line", datum.style].join(" "))
     .attr("y", legend_text_y - get_approx_font_px_height(config.legend_font_size)/2
                 + config.legend_dash_height)
     .attr("x", config.legend_left_pad_px)
     .attr("width", config.legend_dash_width)
-    .attr("height", config.legend_dash_height)
-    .attr("fill", datum.color);
+    .attr("height", config.legend_dash_height);
 
     var label_text = append_if_missing(legend_g, "text", "label_text" + i);
     label_text

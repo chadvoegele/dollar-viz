@@ -146,11 +146,13 @@
 }
 
 .budget_line {
-  stroke: darkblue;
+  stroke: darksalmon;
+  fill: darksalmon;
 }
 
 .register_line {
   stroke: #202020;
+  fill: #202020;
 }
 
 .border_rect {
