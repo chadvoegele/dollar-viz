@@ -155,14 +155,18 @@ function auto_frequency(start_date, end_date) {
   var days_in_range = (end_date.valueOf() - start_date.valueOf())
                       /milliseconds_in_day;
 
-  // one point every 75 pixels
-  // (days / point) = (days) / (width px) * (75 px / point)
+  // one point every 25 pixels
+  // (days / point) = (days) / (width px) * (25 px / point)
   var dims = get_graph_dimensions();
-  var day_frequency = Math.ceil(days_in_range / dims.width * 75);
-  if (day_frequency < 1 || day_frequency > 1000)
-    var frequency = "every 30 days";
+  var day_frequency = Math.ceil(days_in_range / dims.width * 25);
+  if (day_frequency < 25)
+    var frequency = "weekly";
+  else if (26 <= day_frequency && day_frequency < 70)
+    var frequency = "monthly";
+  else if (70 <= day_frequency && day_frequency < 300)
+    var frequency = "quarterly";
   else
-    var frequency = "every " + day_frequency + " days";
+    var frequency = "yearly";
 
   return frequency;
 }
