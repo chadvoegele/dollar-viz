@@ -369,8 +369,14 @@ function build_plot_config(svg_height, svg_width, transition_duration) {
 }
 
 function count_digits(x) {
-  return x > 0 ? 1 + Math.ceil(Math.log10(x))
-    : 1 + Math.ceil(Math.log10(-x));
+  if (-1 <= x && x < 1) {
+    console.warn("Counting digits on number less than 1.");
+    return 1;   // This isn't right, but shouldn't be encountered.
+  }
+  else if (x > 1)
+    return 1 + Math.ceil(Math.log10(x));
+  else
+    return 1 + Math.ceil(Math.log10(-x));
 }
 
 function append_if_missing(svg, element, id) {
