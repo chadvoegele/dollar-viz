@@ -41,7 +41,7 @@ namespace budget_charts {
       {"secure",  's', 0,      0,  "Run with SSL, Client cert, User/Pass. Default is HTTP w/ no auth." },
       {"level",  'l', "log level",      0,  "Log level [0-9]. Higher numbers mean more logging." },
       {"file",  'f', "ledger file",      0,  "Leger file" },
-      {"ledger_rest_prefix",  'l', "ledger rest prefix",      0,  "Prefix for ledger REST http queries. Default is /ledger_rest" },
+      {"ledger_rest_prefix",  'e', "ledger rest prefix",      0,  "Prefix for ledger REST http queries. Default is /ledger_rest" },
       {"port",  'p', "port number",      0,  "Port for server to run on." },
       {"key",  'k', "private key file",      0,  "File containing private key for HTTPS." },
       {"cert",  'c', "certificate file",      0,  "Certificate used by HTTPS." },
@@ -137,6 +137,10 @@ namespace budget_charts {
 
       case 'u':
         arguments->user_pass = load_user_pass(std::string(arg));
+        break;
+
+      case 'e':
+        arguments->ledger_rest_prefix = std::string(arg);
         break;
 
       default:
