@@ -38,7 +38,7 @@
 namespace budget_charts {
   mhd::mhd(mhd_args& args, ::ledger_rest::logger& logger,
       ::budget_charts::responder& responder)
-    : logger(logger), responder(responder), secure(args.get_secure()), port(args.get_port()),
+    : logger(logger), responder(responder), port(args.get_port()),
       key(args.get_key()), cert(args.get_cert()),
       client_cert(args.get_client_cert()), user_pass(args.get_user_pass()) {
     start_daemon(&daemon);
@@ -79,7 +79,33 @@ namespace budget_charts {
   }
 
   void mhd::start_daemon(struct MHD_Daemon** d) {
-    if (secure) {
+    if (cert.size() == 0 || key.size() == 0) {
+      logger.log(5, "HTTP Mode");
+      *d = MHD_start_daemon(MHD_NO_FLAG,
+          port, NULL, NULL,
+          &answer_callback_no_auth, this,
+          MHD_OPTION_END);
+
+    } else if (client_cert.size() == 0) {
+      logger.log(5, "HTTPS Mode");
+#if MHD_VERSION >= 0x00094001
+      std::string key_pass(get_password());
+#endif
+
+      *d = MHD_start_daemon(MHD_USE_SSL,
+          port, NULL, NULL,
+          &answer_callback_auth, this,
+          MHD_OPTION_HTTPS_MEM_CERT, cert.c_str(),
+#if MHD_VERSION >= 0x00094001
+          MHD_OPTION_HTTPS_KEY_PASSWORD, key_pass.c_str(),
+#endif
+          MHD_OPTION_HTTPS_MEM_KEY, key.c_str(),
+          MHD_OPTION_HTTPS_CRED_TYPE, GNUTLS_CRD_CERTIFICATE,
+          MHD_OPTION_NOTIFY_COMPLETED, &request_completed_callback, NULL,
+          MHD_OPTION_END);
+
+    } else {
+      logger.log(5, "HTTPS Mode");
 #if MHD_VERSION >= 0x00094001
       std::string key_pass(get_password());
 #endif
@@ -95,11 +121,6 @@ namespace budget_charts {
           MHD_OPTION_HTTPS_CRED_TYPE, GNUTLS_CRD_CERTIFICATE,
           MHD_OPTION_HTTPS_MEM_TRUST, client_cert.c_str(),
           MHD_OPTION_NOTIFY_COMPLETED, &request_completed_callback, NULL,
-          MHD_OPTION_END);
-    } else {
-      *d = MHD_start_daemon(MHD_NO_FLAG,
-          port, NULL, NULL,
-          &answer_callback_no_auth, this,
           MHD_OPTION_END);
     }
   };
@@ -130,45 +151,24 @@ namespace budget_charts {
 
       mhd* mhd_obj = static_cast<mhd*>(cls);
 
-      if (!verify_certificate(mhd_obj, connection)) {
+      if (mhd_obj->client_cert.size() > 0 && !verify_certificate(mhd_obj, connection)) {
           ret = MHD_queue_response(connection, MHD_HTTP_UNAUTHORIZED, unauthorized_response);
 
-      } else {
-        char* pass = NULL;
-        char* user = MHD_basic_auth_get_username_password(connection, &pass);
-        int fail = (
-            (user == NULL)
-            || (mhd_obj->user_pass.find(std::string(user)) == mhd_obj->user_pass.end())
-            || (pass == NULL)
-            || (mhd_obj->user_pass.find(std::string(user))->second != std::string(pass)) );
-
-        if (fail) {
+      } else if (mhd_obj->user_pass.size() > 0 && !verify_user_pass(mhd_obj, connection)) {
           ret = MHD_queue_basic_auth_fail_response(connection, "", unauthorized_response);
+      } else {
+        http::request request(build_request(connection, url, method));
+        http::response response(mhd_obj->responder.respond(request));
 
-          if (user != NULL && pass != NULL) {
-            std::stringstream s;
-            s << "Failed user/pass login with" << std::endl;
-            s << "user: " << user << std::endl;
-            s << "pass: " << pass << std::endl;
-            mhd_obj->logger.log(5, s.str());
-          }
-
-        } else {
-          http::request request(build_request(connection, url, method));
-          http::response response(mhd_obj->responder.respond(request));
-
-          const char* page = response.body.c_str();
-          struct MHD_Response *mhd_response =
-            MHD_create_response_from_buffer(strlen(page), (void*)page, MHD_RESPMEM_MUST_COPY);
-          ret = MHD_queue_response(connection, response.status_code, mhd_response);
-          MHD_destroy_response(mhd_response);
-        }
-
-        if (user != NULL) free(user);
-        if (pass != NULL) free(pass);
+        const char* page = response.body.c_str();
+        struct MHD_Response *mhd_response =
+          MHD_create_response_from_buffer(strlen(page), (void*)page, MHD_RESPMEM_MUST_COPY);
+        ret = MHD_queue_response(connection, response.status_code, mhd_response);
+        MHD_destroy_response(mhd_response);
 
       }
       MHD_destroy_response(unauthorized_response);
+
     }
 
     return ret;
@@ -192,6 +192,29 @@ namespace budget_charts {
     int ret = MHD_queue_response(connection, response.status_code, mhd_response);
     MHD_destroy_response(mhd_response);
     return ret;
+  }
+
+  bool mhd::verify_user_pass(mhd* mhd_obj, struct MHD_Connection* connection) {
+    char* pass = NULL;
+    char* user = MHD_basic_auth_get_username_password(connection, &pass);
+    bool fail = (
+        (user == NULL)
+        || (mhd_obj->user_pass.find(std::string(user)) == mhd_obj->user_pass.end())
+        || (pass == NULL)
+        || (mhd_obj->user_pass.find(std::string(user))->second != std::string(pass)) );
+
+    if (fail && (user != NULL && pass != NULL)) {
+      std::stringstream s;
+      s << "Failed user/pass login with" << std::endl;
+      s << "user: " << user << std::endl;
+      s << "pass: " << pass << std::endl;
+      mhd_obj->logger.log(5, s.str());
+    }
+
+    if (user != NULL) free(user);
+    if (pass != NULL) free(pass);
+
+    return !fail;
   }
 
   bool mhd::verify_certificate(mhd* mhd_obj, struct MHD_Connection* connection) {

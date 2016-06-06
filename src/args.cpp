@@ -38,7 +38,6 @@ const char *argp_program_bug_address = "";
 namespace budget_charts {
   args::args(int argc, char** argv) {
     struct argp_option options[] = {
-      {"secure",  's', 0,      0,  "Run with SSL, Client cert, User/Pass. Default is HTTP w/ no auth." },
       {"level",  'l', "log level",      0,  "Log level [0-9]. Higher numbers mean more logging." },
       {"file",  'f', "ledger file",      0,  "Leger file" },
       {"ledger_rest_prefix",  'e', "ledger rest prefix",      0,  "Prefix for ledger REST http queries. Default is /ledger_rest" },
@@ -55,13 +54,13 @@ namespace budget_charts {
 
     struct argp argp = { options, args::parse_opt, args_doc, doc };
 
-    arguments.secure = false;
     arguments.log_level = 0;
     arguments.ledger_file_path = std::string("");
     arguments.ledger_rest_prefix = std::string("ledger_rest");
     arguments.port = 80;
     arguments.key = std::string("");
     arguments.cert = std::string("");
+    arguments.client_cert = std::string("");
     arguments.user_pass = std::unordered_map<std::string, std::string>{};
 
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
@@ -73,10 +72,6 @@ namespace budget_charts {
     struct arguments* arguments = static_cast<struct arguments*>(state->input);
 
     switch (key) {
-      case 's':
-        arguments->secure = true;
-        break;
-
       case 'l':
         {
           int log_level = std::stoi(std::string(arg));
@@ -153,17 +148,8 @@ namespace budget_charts {
     if (arguments.ledger_file_path.size() == 0)
         throw std::runtime_error("Ledger file must be set!");
 
-    if (arguments.secure) {
-      if (arguments.key.size() == 0
-          || arguments.cert.size() == 0
-          || arguments.client_cert.size() == 0
-          || arguments.user_pass.size() == 0)
-        throw std::runtime_error("Secure mode requires setting key, cert, client_cert, and user_pass.");
-    }
-  }
-
-  bool args::get_secure() {
-    return arguments.secure;
+    if (arguments.cert.size() > 0 ^ arguments.key.size() > 0)
+      throw std::runtime_error("HTTPS requires setting key and cert.");
   }
 
   int args::get_port() {

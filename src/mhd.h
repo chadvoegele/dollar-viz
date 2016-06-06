@@ -53,7 +53,6 @@ namespace budget_charts {
       int set_fdsets(fd_set* read_fd_set, fd_set* write_fd_set, fd_set* except_fd_set);
       unsigned long long get_select_timeout();
 
-      const bool secure;
       const int port;
       const std::string key;
       const std::string cert;
@@ -94,6 +93,7 @@ namespace budget_charts {
       static std::multimap<std::string, std::string> get_uri_args(struct MHD_Connection* connection);
       void start_daemon(struct MHD_Daemon** d);
       static bool verify_certificate(mhd* mhd_obj, struct MHD_Connection* connection);
+      static bool verify_user_pass(mhd* mhd_obj, struct MHD_Connection* connection);
       static void log_client_cert_dn(const gnutls_datum_t* pcert, gnutls_x509_crt_t client_cert,
           ::ledger_rest::logger&);
 

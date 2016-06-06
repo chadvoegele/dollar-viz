@@ -40,7 +40,6 @@ namespace budget_charts {
       args(int argc, char** argv);
       virtual ~args() { }
 
-      virtual bool get_secure();
       virtual int get_port();
       virtual int get_log_level();
       virtual std::string get_ledger_file_path();
@@ -56,7 +55,6 @@ namespace budget_charts {
       void verify_options();
 
       struct arguments {
-        bool secure;
         int log_level;
         int port;
         std::string ledger_file_path;

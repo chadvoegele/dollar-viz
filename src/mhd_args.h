@@ -32,7 +32,6 @@
 namespace budget_charts {
   class mhd_args {
     public:
-      virtual bool get_secure() = 0;
       virtual int get_port() = 0;
       virtual std::string get_key() = 0;
       virtual std::string get_cert() = 0;
