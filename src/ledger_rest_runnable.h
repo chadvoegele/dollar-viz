@@ -44,8 +44,6 @@ namespace budget_charts {
       ledger_rest_runnable& operator=(const ledger_rest_runnable&&) = delete;
       virtual ~ledger_rest_runnable() { }
 
-      virtual void register_responder(
-          std::unordered_map<std::string, responder*>& responders);
       virtual http::response respond(http::request request);
       virtual void run_from_select(const fd_set* read_fd_set, const fd_set* write_fd_set,
           const fd_set* except_fd_set);

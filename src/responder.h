@@ -33,8 +33,6 @@
 namespace budget_charts {
   class responder {
     public:
-      virtual void register_responder(
-          std::unordered_map<std::string, responder*>& responders) = 0;
       virtual http::response respond(http::request request) = 0;
       virtual ~responder() { }
   };

@@ -18,10 +18,10 @@ add_library(${LIB_LEDGER_REST_NAME} STATIC
 set_cpp11(${LIB_LEDGER_REST_NAME})
 
 add_library(${PROJECT_NAME} STATIC
-  uri_parser.cpp dispatcher.cpp mhd.cpp
+  uri_parser.cpp mhd.cpp
   runnable.cpp runner.cpp stderr_logger.cpp ledger_rest_runnable.cpp
   file_reader.cpp args.cpp ledger_rest_args.cpp mhd_args.cpp
-  file_responder.cpp signal_handler.cpp)
+  signal_handler.cpp)
 set_cpp11(${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} ${LIB_LEDGER_REST_NAME} ${LEDGER_LIB} ${GNUTLS_LIB} ${Boost_LIBRARIES})
 
@@ -37,8 +37,8 @@ install(TARGETS ${LIB_LEDGER_REST_NAME} ${PROJECT_NAME} ${EXE_TARGET}
         ARCHIVE DESTINATION lib)
 install(FILES ledger_rest.h http.h logger.h
         DESTINATION include/${LIB_LEDGER_REST_NAME})
-install(FILES uri_parser.h dispatcher.h mhd.h
+install(FILES uri_parser.h mhd.h
           runnable.h runner.h stderr_logger.h ledger_rest_runnable.h
           file_reader.h args.h ledger_rest_args.h mhd_args.h
-          file_responder.h signal_handler.h
+          signal_handler.h
         DESTINATION include/${PROJECT_NAME})

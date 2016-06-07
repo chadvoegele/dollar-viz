@@ -39,13 +39,6 @@ namespace budget_charts {
       set_update_fd();
   }
 
-  void ledger_rest_runnable::register_responder(
-      std::unordered_map<std::string, responder*>& responders) {
-    responders.insert(
-        std::make_pair(std::string("/") + http_prefix, this)
-        );
-  }
-
   http::response ledger_rest_runnable::respond(http::request request) {
     return ::ledger_rest::ledger_rest::respond(request);
   }

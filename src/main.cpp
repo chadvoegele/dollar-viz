@@ -33,10 +33,8 @@
 #include "runner.h"
 #include "mhd.h"
 #include "ledger_rest_runnable.h"
-#include "file_responder.h"
 #include "runnable.h"
 #include "stderr_logger.h"
-#include "dispatcher.h"
 #include "signal_handler.h"
 
 int main(int argc, char** argv) {
@@ -44,14 +42,8 @@ int main(int argc, char** argv) {
 
   ledger_rest::stderr_logger logger(args.get_log_level());
   budget_charts::ledger_rest_runnable ledger(args, logger);
-  budget_charts::file_responder file(logger);
 
-  std::unordered_map<std::string, budget_charts::responder*> responders;
-  ledger.register_responder(responders);
-  file.register_responder(responders);
-  budget_charts::dispatcher dispatcher(responders);
-
-  budget_charts::mhd mhd(args, logger, dispatcher);
+  budget_charts::mhd mhd(args, logger, ledger);
 
   std::list<budget_charts::runnable*> runners{ &mhd, &ledger };
   budget_charts::runner runner(logger, runners);

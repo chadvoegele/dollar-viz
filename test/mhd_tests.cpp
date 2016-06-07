@@ -41,11 +41,6 @@
 
 class magnet_responder : public budget_charts::responder {
     public:
-      void register_responder(
-          std::unordered_map<std::string, responder*>& responders) {
-        responders.insert( std::make_pair(std::string(""), this));
-      }
-
       http::response respond(http::request request) {
         this->request = new http::request(request);
 
