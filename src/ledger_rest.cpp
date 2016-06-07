@@ -176,8 +176,16 @@ namespace ledger_rest {
     std::unordered_map<std::string, std::list<std::string>> uri_args
       = budget_charts::mapify_uri_args(request.uri_args);
 
-    std::list<std::string> register_request = {"", http_prefix, "report", "register"};
-    std::list<std::string> accounts_request = {"", http_prefix, "accounts"};
+    std::list<std::string> register_request;
+    std::list<std::string> accounts_request;
+    if (http_prefix.size() > 0) {
+      register_request = {"", http_prefix, "report", "register"};
+      accounts_request = {"", http_prefix, "accounts"};
+    } else {
+      register_request = {"", "report", "register"};
+      accounts_request = {"", "accounts"};
+    }
+
     if (uri_parts == register_request) {
       if (uri_args.find("args") != uri_args.end()
           && uri_args.find("query") != uri_args.end()) {
