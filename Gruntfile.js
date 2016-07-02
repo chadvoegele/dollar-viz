@@ -1,13 +1,8 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     closureCompiler:  {
-
       options: {
         compilerFile: '/usr/share/java/closure-compiler/closure-compiler.jar',
-        compilerOpts: {
-          compilation_level: 'ADVANCED_OPTIMIZATIONS',
-          output_wrapper: '"(function(){%output%}).call(this);"'
-        },
         TieredCompilation: true
       },
 
@@ -27,13 +22,37 @@ module.exports = function(grunt) {
     },
     clean: {
       folder: ['dist/']
+    },
+    connect: {
+      server: {
+        options: {
+          port: 9000,
+          base: 'dist/www',
+          keepalive: true,
+          middleware: function (connect, options, middlewares) {
+            var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
+            middlewares.unshift(proxySnippet);
+            return middlewares;
+          }
+        },
+        proxies: [
+          {
+            context: '/ledger_rest',
+            host: 'localhost',
+            port: 9856
+          }
+        ]
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-closure-tools');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-connect-proxy');
 
-  grunt.registerTask('default', ['closureCompiler', 'copy']);
+  grunt.registerTask('build', ['closureCompiler', 'copy']);
+  grunt.registerTask('serve', ['configureProxies:server', 'connect:server']);
 
 };
