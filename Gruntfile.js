@@ -20,6 +20,12 @@ module.exports = function(grunt) {
         ],
       },
     },
+    concat: {
+      dist: {
+        src: 'www/js/app/*.js',
+        dest: 'dist/www/js/app/chart.min.js'
+      }
+    },
     clean: {
       folder: ['dist/']
     },
@@ -28,7 +34,7 @@ module.exports = function(grunt) {
         options: {
           port: 9000,
           base: 'dist/www',
-          keepalive: true,
+          livereload: true,
           middleware: function (connect, options, middlewares) {
             var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
             middlewares.unshift(proxySnippet);
@@ -43,6 +49,12 @@ module.exports = function(grunt) {
           }
         ]
       }
+    },
+    watch: {
+      build: {
+        files: 'www/js/app/*.js',
+        tasks: ['copy', 'concat:dist']
+      }
     }
   });
 
@@ -50,9 +62,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-connect-proxy');
 
   grunt.registerTask('build', ['closureCompiler', 'copy']);
-  grunt.registerTask('serve', ['configureProxies:server', 'connect:server']);
+  grunt.registerTask('serve',
+    ['copy', 'concat:dist', 'configureProxies:server', 'connect:server', 'watch']);
 
 };
