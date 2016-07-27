@@ -46,7 +46,10 @@ chart.setup_typeahead = function () {
   var accounts = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
-    prefetch: "/ledger_rest/accounts"
+    prefetch: {
+      url: "/ledger_rest/accounts",
+      cache: false
+    }
   });
 
   $(".typeahead").typeahead(null, {
