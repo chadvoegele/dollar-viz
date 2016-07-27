@@ -32,7 +32,6 @@
 //   https://www.safaribooksonline.com/blog/2014/03/11/solving-d3-label-placement-constraint-relaxing/
 
 var cache = new Cache();
-setup_page();
 
 function setup_page() {
   setup_typeahead();
