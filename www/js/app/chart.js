@@ -215,11 +215,13 @@ chart.build_ledger_requests = function (chart_request) {
 
 chart.build_filter_chain = function (chart_request) {
   return function(convos) {
-    var convos = convos.map(data.convert_response_date);
-    if (chart_request.budget)
-      convos = data.calculate_budget(convos);
-    if (chart_request.accumulate)
-      convos = convos.map(data.accumulate);
-    return convos.map(data.convo_to_chart_data);
+    if (convos.every(function(c) { return c.response && c.response.length > 0; })) {
+      var convos = convos.map(data.convert_response_date);
+      if (chart_request.budget)
+        convos = data.calculate_budget(convos);
+      if (chart_request.accumulate)
+        convos = convos.map(data.accumulate);
+      return convos.map(data.convo_to_chart_data);
+    }
   }
 }
