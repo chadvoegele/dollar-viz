@@ -28,11 +28,14 @@
 var data = {};
 data.single_json_callback = function (expected_response_count, convos, request, callback,
   error, json) {
-  if (error) return console.warn(error);
-  if (json.length === 0) return console.warn("No data received.");
-    convos.push({ request: request, response: json });
-    if (convos.length === expected_response_count)
-      callback(convos);
+  if (error) {
+    console.warn(error);
+  } else if (json.length === 0) {
+    console.warn("No data received.");
+  }
+  convos.push({ request: request, response: json });
+  if (convos.length === expected_response_count)
+    callback(convos);
 }
 
 data.multi_json = function (requests, callback) {
