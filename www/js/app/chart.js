@@ -32,16 +32,17 @@
 //   https://www.safaribooksonline.com/blog/2014/03/11/solving-d3-label-placement-constraint-relaxing/
 
 var cache = new Cache();
+var chart = {};
 
-function setup_page() {
-  setup_typeahead();
-  setup_datepicker();
-  setup_graph();
-  setup_more_options_collapse();
-  window.onresize = function() { resize_graph(); };
+chart.setup_page = function () {
+  chart.setup_typeahead();
+  chart.setup_datepicker();
+  chart.setup_graph();
+  chart.setup_more_options_collapse();
+  window.onresize = function() { chart.resize_graph(); };
 }
 
-function setup_typeahead() {
+chart.setup_typeahead = function () {
   var accounts = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -53,24 +54,24 @@ function setup_typeahead() {
     source: accounts
   });
 
-  $(".typeahead").on("typeahead:selected", function(e,i) {update_timeout();});
+  $(".typeahead").on("typeahead:selected", function(e,i) {chart.update_timeout();});
 
   $("#query").tooltip();
 }
 
-function default_start_date() {
+chart.default_start_date = function () {
   var before_today = new Date(Date.now());
   before_today.setFullYear(before_today.getFullYear() - 5);
   return before_today;
 }
 
-function setup_datepicker() {
+chart.setup_datepicker = function () {
   $(".datepicker").datepicker({})
-  .on("changeDate", function(e) { update_timeout(); });
-  $("#start_date.datepicker").datepicker("setDate", default_start_date());
+  .on("changeDate", function(e) { chart.update_timeout(); });
+  $("#start_date.datepicker").datepicker("setDate", chart.default_start_date());
 }
 
-function get_window_properties() {
+chart.get_window_properties = function () {
   var window_properties = {
     width: window.innerWidth,
     height: window.innerHeight
@@ -78,8 +79,8 @@ function get_window_properties() {
   return window_properties;
 }
 
-function setup_graph() {
-  var properties = get_window_properties();
+chart.setup_graph = function () {
+  var properties = chart.get_window_properties();
   var options_width = $("#query_options_div").width();
   var options_height = $("#query_options_div").height();
   var graph_width = Math.round(options_width * 1.2);
@@ -95,7 +96,7 @@ function setup_graph() {
   .attr("height", graph_height);
 }
 
-function setup_more_options_collapse() {
+chart.setup_more_options_collapse = function () {
   document.getElementById("collapse_more_options_link").onclick = function() {
     if (this.text === "More options \u25C0")
       this.text = "More options \u25BC";
@@ -103,49 +104,49 @@ function setup_more_options_collapse() {
       this.text = "More options \u25C0";
   };
   $("#collapse_more_options").on("hidden.bs.collapse", function() {
-    resize_graph();
+    chart.resize_graph();
   });
   $("#collapse_more_options").on("shown.bs.collapse", function() {
-    resize_graph();
+    chart.resize_graph();
   });
 }
 
-function resize_graph() {
-  setup_graph();
-  plot_register();
+chart.resize_graph = function () {
+  chart.setup_graph();
+  chart.plot_register();
 }
 
-function plot_callback(filter_chain, convos) {
+chart.plot_callback = function (filter_chain, convos) {
   var data = filter_chain(convos);
   cache.set_data(data);
-  plot_register();
+  chart.plot_register();
 }
 
-function get_graph_dimensions() {
+chart.get_graph_dimensions = function () {
   var svg = d3.select("#the_graph");
   var height = svg.attr("height");
   var width = svg.attr("width");
   return { height: height, width: width };
 }
 
-function plot_register() {
+chart.plot_register = function () {
   var svg = d3.select("#the_graph");
-  var dims = get_graph_dimensions();
+  var dims = chart.get_graph_dimensions();
   if (cache.get_data() !== undefined)
-    plot_data(svg, cache.get_data(),
-          build_plot_config(dims.height, dims.width, 500));
+    plot.plot_data(svg, cache.get_data(),
+         plot.build_plot_config(dims.height, dims.width, 500));
 }
 
-function parse_date_or_undefined(date_str) {
+chart.parse_date_or_undefined = function (date_str) {
   var date = date_str.length > 0
     ? new Date(date_str)
     : undefined;
   return date;
 }
 
-function auto_frequency(start_date, end_date) {
+chart.auto_frequency = function (start_date, end_date) {
   if (start_date === undefined)
-    start_date = default_start_date();
+    start_date = chart.default_start_date();
   if (end_date === undefined)
     end_date = new Date(Date.now());
 
@@ -156,7 +157,7 @@ function auto_frequency(start_date, end_date) {
 
   // one point every 25 pixels
   // (days / point) = (days) / (width px) * (25 px / point)
-  var dims = get_graph_dimensions();
+  var dims = chart.get_graph_dimensions();
   var day_frequency = Math.ceil(days_in_range / dims.width * 25);
   if (day_frequency < 25)
     var frequency = "weekly";
@@ -170,36 +171,36 @@ function auto_frequency(start_date, end_date) {
   return frequency;
 }
 
-function update_timeout() {
+chart.update_timeout = function () {
   var timeout_millis = 250;
   var timeout_id = cache.get_timeout();
   if (timeout_id !== undefined)
     window.clearTimeout(timeout_id);
-  cache.set_timeout(window.setTimeout(update, timeout_millis));
+  cache.set_timeout(window.setTimeout(chart.update, timeout_millis));
 }
 
-function update() {
+chart.update = function () {
   var query = document.getElementById("query").value;
   var frequency = document.getElementById("frequency").value;
-  var start_date = parse_date_or_undefined(document.getElementById("start_date").value);
-  var end_date = parse_date_or_undefined(document.getElementById("end_date").value);
+  var start_date = chart.parse_date_or_undefined(document.getElementById("start_date").value);
+  var end_date = chart.parse_date_or_undefined(document.getElementById("end_date").value);
   var budget = document.getElementById("budget").checked;
   var accumulate = document.getElementById("accumulate").checked;
 
   if (query !== "") {
     if (frequency === "auto")
-      frequency = auto_frequency(start_date, end_date);
+      frequency = chart.auto_frequency(start_date, end_date);
 
     var chart_request = new ChartRequest(query, frequency, start_date, end_date,
                                          budget, accumulate);
-    var requests = build_ledger_requests(chart_request);
-    var filter_chain = build_filter_chain(chart_request);
+    var requests = chart.build_ledger_requests(chart_request);
+    var filter_chain = chart.build_filter_chain(chart_request);
 
-    multi_json(requests, function(convos) { plot_callback(filter_chain, convos); });
+    data.multi_json(requests, function(convos) { chart.plot_callback(filter_chain, convos); });
   }
 }
 
-function build_ledger_requests(chart_request) {
+chart.build_ledger_requests = function (chart_request) {
   if (chart_request.budget === false)
     return [chart_request];
   else {
@@ -212,13 +213,13 @@ function build_ledger_requests(chart_request) {
   }
 }
 
-function build_filter_chain(chart_request) {
+chart.build_filter_chain = function (chart_request) {
   return function(convos) {
-    var convos = convos.map(convert_response_date);
+    var convos = convos.map(data.convert_response_date);
     if (chart_request.budget)
-      convos = calculate_budget(convos);
+      convos = data.calculate_budget(convos);
     if (chart_request.accumulate)
-      convos = convos.map(accumulate);
-    return convos.map(convo_to_chart_data);
+      convos = convos.map(data.accumulate);
+    return convos.map(data.convo_to_chart_data);
   }
 }

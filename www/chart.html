@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap-datepicker3.standalone.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/chart.css"/>
   </head>
-  <body onload="setup_page()">
+  <body onload="chart.setup_page()">
     <div class="row">
       <div class="col-lg-2 col-md-2 col-sm-1 col-xs-0"></div>
       <div id="query_options_div" class="col-lg-8 col-md-8 col-sm-10 col-xs-12">
@@ -40,7 +40,7 @@
               <input class="typeahead" id="query" type="text"
                      data-toggle="tooltip" data-placement="bottom"
                      title="Try &quot;expenses&quot; or &quot;income&quot;"
-                     placeholder="Account" oninput="update_timeout()"/>
+                     placeholder="Account" oninput="chart.update_timeout()"/>
             </div>
           </div>
           <div class="form-group">
@@ -57,7 +57,7 @@
               </label>
               <div class="col-lg-10 col-md-10 col-sm-9 col-xs-8">
                 <select class="form-control" id="frequency"
-                                             onchange="update_timeout()">
+                                             onchange="chart.update_timeout()">
                   <option value="auto">Auto</option>
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
@@ -83,7 +83,7 @@
                     Budget
                   </label>
                   <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8">
-                    <input id="budget" type="checkbox" onchange="update_timeout()" checked/>
+                    <input id="budget" type="checkbox" onchange="chart.update_timeout()" checked/>
                   </div>
                 </div>
               </div>
@@ -93,7 +93,7 @@
                     Accumulate
                   </label>
                   <div class="col-lg-9 col-md-8 col-sm-8 col-xs-6">
-                    <input id="accumulate" type="checkbox" onchange="update_timeout()"/>
+                    <input id="accumulate" type="checkbox" onchange="chart.update_timeout()"/>
                   </div>
                 </div>
               </div>

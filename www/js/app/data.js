@@ -25,8 +25,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function single_json_callback(expected_response_count, convos, request, callback,
-                              error, json) {
+var data = {};
+data.single_json_callback = function (expected_response_count, convos, request, callback,
+  error, json) {
   if (error) return console.warn(error);
   if (json.length === 0) return console.warn("No data received.");
     convos.push({ request: request, response: json });
@@ -34,24 +35,24 @@ function single_json_callback(expected_response_count, convos, request, callback
       callback(convos);
 }
 
-function multi_json(requests, callback) {
+data.multi_json = function (requests, callback) {
   var convos = [];
   requests.forEach(function(request) {
     d3.json(request.build_url(), function(error, json) {
-      return single_json_callback(requests.length, convos, request, callback,
-                                  error, json);
+      return data.single_json_callback(requests.length, convos, request, callback,
+        error, json);
     });
   });
 };
 
-function convert_response_date(convos) {
+data.convert_response_date = function (convos) {
   convos.response.forEach(function(d) {
     d.date = new Date(d.date);
   });
   return convos;
 }
 
-function mode(d) {
+data.mode = function (d) {
   var counts = [];
 
   for (var i = 0; i < d.length; i++) {
@@ -75,9 +76,9 @@ function mode(d) {
   return max_key;
 }
 
-function get_chart_data_name(convo) {
+data.get_chart_data_name = function(convo) {
   if (convo.response.length > 0) {
-    var most_common_account = mode(
+    var most_common_account = data.mode(
       convo.response.filter(function(d) { return Math.abs(d.amount) > 0; })
       .map(function(d) { return d.account_name; })
       );
@@ -92,17 +93,17 @@ function get_chart_data_name(convo) {
     return "";
 }
 
-function get_chart_data_style(convo) {
+data.get_chart_data_style = function(convo) {
   if (convo.request.budget)
     return "budget_line";
   else
     return "register_line";
 }
 
-function convo_to_chart_data(convo) {
+data.convo_to_chart_data = function(convo) {
   var chart_data = {
-    name : get_chart_data_name(convo),
-    style : get_chart_data_style(convo),
+    name : data.get_chart_data_name(convo),
+    style : data.get_chart_data_style(convo),
     d : convo.response,
     get_x : function(d) { return d.date; },
     get_y : function(d) { return d.amount; },
@@ -111,7 +112,7 @@ function convo_to_chart_data(convo) {
   return chart_data;
 }
 
-function union_sort(a, b, compare) {
+data.union_sort = function(a, b, compare) {
   var joined_sorted = a.concat(b).sort(compare);
   var reduce_fn = function(agg, value, index, array) {
     if (agg.length === 0)
@@ -127,8 +128,8 @@ function union_sort(a, b, compare) {
   return unique_sorted;
 }
 
-function align_to_dates(all_dates, response) {
-  var default_account = mode(response.map(function(d) { return d.account_name; }));
+data.align_to_dates = function(all_dates, response) {
+  var default_account = data.mode(response.map(function(d) { return d.account_name; }));
 
   var aligned_response = [];
   var all_index = 0;
@@ -166,7 +167,7 @@ function align_to_dates(all_dates, response) {
   return aligned_response;
 }
 
-function calculate_budget(convos) {
+data.calculate_budget = function(convos) {
   if (convos.length !== 2) {
     console.warn("Budget calculation should only have register and add-budget!");
     return [];
@@ -185,11 +186,11 @@ function calculate_budget(convos) {
       return [];
     }
     var date_accessor = function(d) { return d.date; };
-    var all_dates = union_sort(budget.response.map(date_accessor),
+    var all_dates = data.union_sort(budget.response.map(date_accessor),
                                no_budget.response.map(date_accessor),
                                function(a, b) { return a.getTime() - b.getTime(); });
-    budget.response = align_to_dates(all_dates, budget.response);
-    no_budget.response = align_to_dates(all_dates, no_budget.response);
+    budget.response = data.align_to_dates(all_dates, budget.response);
+    no_budget.response = data.align_to_dates(all_dates, no_budget.response);
 
     // ledger returns add-budget = register - budget.
     // recover original budget as budget = register - add-budget.
@@ -203,7 +204,7 @@ function calculate_budget(convos) {
   }
 }
 
-function accumulate(convo) {
+data.accumulate = function(convo) {
   var running_total = 0;
   convo.response.forEach(function (d) {
     running_total = running_total + d.amount;
