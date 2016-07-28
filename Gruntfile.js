@@ -8,7 +8,7 @@ module.exports = function(grunt) {
 
       targetName: {
         src: 'www/js/app/*.js',
-        dest: 'dist/www/js/app/chart.min.js'
+        dest: 'dist/www/js/app/app.min.js'
       }
     },
     copy: {
@@ -23,7 +23,7 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         src: 'www/js/app/*.js',
-        dest: 'dist/www/js/app/chart.min.js'
+        dest: 'dist/www/js/app/app.min.js'
       }
     },
     clean: {
