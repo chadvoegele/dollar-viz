@@ -121,7 +121,7 @@ chart.resize_graph = function () {
 
 chart.plot_callback = function (filter_chain, convos) {
   var data = filter_chain(convos);
-  cache.set_data(data);
+  cache.set_data(data, 'data');
   chart.plot_register();
 }
 
@@ -135,8 +135,8 @@ chart.get_graph_dimensions = function () {
 chart.plot_register = function () {
   var svg = d3.select("#the_graph");
   var dims = chart.get_graph_dimensions();
-  if (cache.get_data() !== undefined)
-    plot.plot_data(svg, cache.get_data(),
+  if (cache.get_data('data') !== undefined)
+    plot.plot_data(svg, cache.get_data('data'),
          plot.build_plot_config(dims.height, dims.width, 500));
 }
 
@@ -176,10 +176,10 @@ chart.auto_frequency = function (start_date, end_date) {
 
 chart.update_timeout = function () {
   var timeout_millis = 250;
-  var timeout_id = cache.get_timeout();
+  var timeout_id = cache.get_data('timeout');
   if (timeout_id !== undefined)
     window.clearTimeout(timeout_id);
-  cache.set_timeout(window.setTimeout(chart.update, timeout_millis));
+  cache.set_data(window.setTimeout(chart.update, timeout_millis), 'timeout');
 }
 
 chart.update = function () {

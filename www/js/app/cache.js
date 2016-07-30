@@ -26,22 +26,13 @@
  */
 
 function Cache() {
-  this.data = undefined;
-  this.timeout = undefined;
+  this.data = {};
 }
 
-Cache.prototype.get_data = function() {
-  return this.data;
+Cache.prototype.get_data = function(key) {
+  return this.data[key];
 }
 
-Cache.prototype.set_data = function(data) {
-  this.data = data;
-}
-
-Cache.prototype.get_timeout = function() {
-  return this.timeout;
-}
-
-Cache.prototype.set_timeout = function(timeout) {
-  this.timeout = timeout;
+Cache.prototype.set_data = function(data, key) {
+  this.data[key] = data;
 }
