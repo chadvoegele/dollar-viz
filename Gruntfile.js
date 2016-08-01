@@ -14,7 +14,7 @@ module.exports = function(grunt) {
     copy: {
       main: {
         files: [
-          {expand: true, src: ['www/js/vendor/bootstrap-datepicker.min.js'], dest: 'dist/'},
+          {expand: true, src: ['www/js/vendor/*.min.js'], dest: 'dist/'},
           {expand: true, src: ['www/css/*.css'], dest: 'dist/'},
           {expand: true, src: ['www/*.html'], dest: 'dist/'}
         ],

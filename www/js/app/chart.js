@@ -39,6 +39,7 @@ chart.setup_page = function () {
   chart.setup_datepicker();
   chart.setup_graph();
   chart.setup_more_options_collapse();
+  chart.setup_uri_args();
   window.onresize = function() { chart.resize_graph(); };
 }
 
@@ -113,6 +114,18 @@ chart.setup_more_options_collapse = function () {
     chart.resize_graph();
   });
 }
+
+chart.setup_uri_args = function() {
+  var fieldIds = [ 'query',
+    'frequency',
+    'start_date',
+    'end_date',
+    'budget',
+    'accumulate' ];
+  fieldIds.forEach(function (f) {
+    Arg(f) && $('#' + f).val(Arg(f));
+  });
+};
 
 chart.resize_graph = function () {
   chart.setup_graph();
