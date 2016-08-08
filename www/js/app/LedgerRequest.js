@@ -33,8 +33,10 @@ function LedgerRequest(query, frequency, start_date, end_date, budget) {
   this.budget = budget;
 }
 
+LedgerRequest.prototype.base_url = '/ledger_rest/report/register';
+
 LedgerRequest.prototype.build_url = function() {
-  var url = "/ledger_rest/report/register?args=--empty&args=--collapse&args=-V";
+  var url = this.base_url + "?args=--empty&args=--collapse&args=-V";
 
   if (this.budget)
     url = url + "&args=--add-budget";
@@ -47,6 +49,27 @@ LedgerRequest.prototype.build_url = function() {
   url = url + url_query;
 
   return url;
+}
+
+LedgerRequest.prototype.to_request_object = function() {
+  var args = [
+    '--empty',
+    '--collapse',
+    '-V',
+    '--period',
+    build_period(this.frequency, this.start_date, this.end_date)
+  ];
+
+  if (this.budget) {
+    args.push('--add-budget');
+  }
+
+  var query = this.query.trim().split(" ")
+
+  return {
+    args: args,
+    query: query
+  };
 }
 
 function date_to_string(date, separator) {

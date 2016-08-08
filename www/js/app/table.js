@@ -52,22 +52,59 @@ Table.prototype.load = function () {
   fetch('/ledger_rest/budget_accounts')
     .then(function (response) {
       return response.json();
-    })
-    .then(function (accounts) {
+
+    }).then(function (accounts) {
       var requests = accounts.map(function (account) {
         return [
           new LedgerRequest(account, "monthly", _this.start_date, _this.end_date, false),
           new LedgerRequest(account, "monthly", _this.start_date, _this.end_date, true),
         ];
       }).reduce(function (a, b) { return a.concat(b); });
-      data.multi_json(requests, _this.multi_callback.bind(_this));
+      return requests;
+
+    }).then(function (ledgerRequests) {
+      _this.loadRequests(ledgerRequests);
+
     }).catch(function (error) {
       console.error(error);
     })
 }
 
-// TODO: promisify-all this
-Table.prototype.multi_callback = function (convos) {
+Table.prototype.loadRequests = function (ledgerRequests) {
+  var _this = this;
+
+  var postRequests = ledgerRequests.map(function (lr) {
+    return lr.to_request_object()
+  });
+
+  fetch(LedgerRequest.prototype.base_url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(postRequests)
+
+  }).then(function (responses) {
+    return responses.json();
+
+  }).then(function (responsesJSON) {
+    var requestResponsePairs = responsesJSON.map(function (r, i) {
+      return {
+        request: ledgerRequests[i],
+        response: responsesJSON[i]
+      };
+    });
+    return requestResponsePairs;
+
+  }).then(_this.processData.bind(_this)
+
+  ).catch(function (error) {
+    console.error(error);
+  })
+};
+
+Table.prototype.processData = function (convos) {
   var data = convos.reduce(function (agg, convo) {
     if (convo.response && convo.request) {
       var rows = convo.response.map(function (row) {
