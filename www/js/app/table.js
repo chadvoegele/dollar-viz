@@ -33,6 +33,8 @@ function Table(start_date, end_date) {
     this.end_date = end_date;
   } else {
     this.end_date = new Date(Date.now());
+    // ledger uses date before end date in period expressions
+    this.end_date.setDate(this.end_date.getDate() + 1);
   }
 
   if (start_date) {
