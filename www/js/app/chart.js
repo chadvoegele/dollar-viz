@@ -207,8 +207,9 @@ chart.update = function () {
     if (frequency === "auto")
       frequency = chart.auto_frequency(start_date, end_date);
 
-    var chart_request = new ChartRequest(query, frequency, start_date, end_date,
-                                         budget, accumulate);
+    var query_parts = query.trim().split(" ");
+    var chart_request = new ChartRequest(query_parts, frequency, start_date,
+      end_date, budget, accumulate);
     var requests = chart.build_ledger_requests(chart_request);
     var filter_chain = chart.build_filter_chain(chart_request);
 

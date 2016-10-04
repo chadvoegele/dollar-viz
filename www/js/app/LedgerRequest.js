@@ -35,41 +35,38 @@ function LedgerRequest(query, frequency, start_date, end_date, budget) {
 
 LedgerRequest.prototype.base_url = '/ledger_rest/report/register';
 
-LedgerRequest.prototype.build_url = function() {
-  var url = this.base_url + "?args=--empty&args=--collapse&args=-V";
-
-  if (this.budget)
-    url = url + "&args=--add-budget";
-
-  url = url + "&args=--period&args="
-            + build_period(this.frequency, this.start_date, this.end_date);
-
-  var url_query = this.query.trim().split(" ")
-                  .map(function(s){ return "&query=" + s; }).join("");
-  url = url + url_query;
-
-  return url;
-}
-
 LedgerRequest.prototype.to_request_object = function() {
   var args = [
     '--empty',
-    '--collapse',
-    '-V',
+    '--market',
+    '--add-budget',
     '--period',
     build_period(this.frequency, this.start_date, this.end_date)
   ];
 
-  if (this.budget) {
-    args.push('--add-budget');
-  }
-
-  var query = this.query.trim().split(" ")
+  if (!this.budget)
+    args.push("--actual");
 
   return {
     args: args,
-    query: query
+    query: this.query
   };
+}
+
+LedgerRequest.prototype.build_url = function() {
+  var request = this.to_request_object();
+
+  var url_args = request.args
+    .map(function (s) { return "args=" + s; })
+    .join("&");
+
+  var url_query = request.query
+    .map(function(s){ return "query=" + s; })
+    .join("&");
+
+  var url = this.base_url + '?' + url_args + '&' + url_query;
+
+  return url;
 }
 
 function date_to_string(date, separator) {

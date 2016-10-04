@@ -58,8 +58,8 @@ Table.prototype.load = function () {
     }).then(function (accounts) {
       var requests = accounts.map(function (account) {
         return [
-          new LedgerRequest(account, "monthly", _this.start_date, _this.end_date, false),
-          new LedgerRequest(account, "monthly", _this.start_date, _this.end_date, true),
+          new LedgerRequest([account], "monthly", _this.start_date, _this.end_date, false),
+          new LedgerRequest([account], "monthly", _this.start_date, _this.end_date, true),
         ];
       }).reduce(function (a, b) { return a.concat(b); });
       return requests;
