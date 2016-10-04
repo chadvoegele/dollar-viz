@@ -56,12 +56,12 @@ Table.prototype.load = function () {
       return response.json();
 
     }).then(function (accounts) {
-      var requests = accounts.map(function (account) {
-        return [
-          new LedgerRequest([account], "monthly", _this.start_date, _this.end_date, false),
-          new LedgerRequest([account], "monthly", _this.start_date, _this.end_date, true),
+      var accounts_request = accounts.join(" or ").split(" ");
+      var requests =
+        [
+          new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, false),
+          new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, true)
         ];
-      }).reduce(function (a, b) { return a.concat(b); });
       return requests;
 
     }).then(function (ledgerRequests) {
@@ -116,7 +116,7 @@ Table.prototype.processData = function (convos) {
         return {
           amount: row.amount,
           date: new Date(dateSlashes),
-          account_name: convo.request.query,
+          account_name: row.account_name,
           budget: convo.request.budget
         };
       });
