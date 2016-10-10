@@ -41,7 +41,7 @@ function Table(start_date, end_date) {
     this.start_date = start_date;
   } else {
     var before_today = new Date(Date.now());
-    before_today.setMonth(before_today.getMonth() - 6)
+    before_today.setMonth(before_today.getMonth() - 3)
     before_today.setDate(1);
     this.start_date = before_today;
   }
