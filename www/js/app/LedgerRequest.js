@@ -25,12 +25,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function LedgerRequest(query, frequency, start_date, end_date, budget) {
+function LedgerRequest(query, frequency, start_date, end_date, budget, collapse) {
   this.query = query;
   this.frequency = frequency;
   this.start_date = start_date;
   this.end_date = end_date;
   this.budget = budget;
+  this.collapse = collapse;
 }
 
 LedgerRequest.prototype.base_url = '/ledger_rest/report/register';
@@ -39,13 +40,26 @@ LedgerRequest.prototype.to_request_object = function() {
   var args = [
     '--empty',
     '--market',
-    '--add-budget',
     '--period',
     build_period(this.frequency, this.start_date, this.end_date)
   ];
 
-  if (!this.budget)
-    args.push("--actual");
+  // Use either:
+  // 1. --collapse + (--add-budget)
+  // 2. (--actual) + --add-budget
+  if (this.collapse) {
+    args.push('--collapse');
+
+    if (this.budget) {
+      args.push('--add-budget');
+    }
+  } else {
+    args.push('--add-budget');
+
+    if (!this.budget) {
+      args.push('--actual');
+    }
+  }
 
   return {
     args: args,

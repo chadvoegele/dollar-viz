@@ -59,8 +59,8 @@ Table.prototype.load = function () {
       var accounts_request = accounts.join(" or ").split(" ");
       var requests =
         [
-          new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, false),
-          new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, true)
+          new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, false, false),
+          new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, true, false)
         ];
       return requests;
 

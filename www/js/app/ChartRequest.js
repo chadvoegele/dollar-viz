@@ -25,8 +25,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function ChartRequest(query, frequency, start_date, end_date, budget, accumulate) {
-  LedgerRequest.call(this, query, frequency, start_date, end_date, budget);
+function ChartRequest(query, frequency, start_date, end_date, budget, collapse, accumulate) {
+  LedgerRequest.call(this, query, frequency, start_date, end_date, budget, collapse);
   this.accumulate = accumulate;
 }
 

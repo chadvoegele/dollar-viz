@@ -209,7 +209,7 @@ chart.update = function () {
 
     var query_parts = query.trim().split(" ");
     var chart_request = new ChartRequest(query_parts, frequency, start_date,
-      end_date, budget, accumulate);
+      end_date, budget, true, accumulate);
     var requests = chart.build_ledger_requests(chart_request);
     var filter_chain = chart.build_filter_chain(chart_request);
 
@@ -225,7 +225,8 @@ chart.build_ledger_requests = function (chart_request) {
                                              chart_request.frequency,
                                              chart_request.start_date,
                                              chart_request.end_date,
-                                             false, chart_request.accumulate);
+                                             false,
+                                             true, chart_request.accumulate);
     return [chart_request, no_budget_request];
   }
 }
@@ -234,10 +235,12 @@ chart.build_filter_chain = function (chart_request) {
   return function(convos) {
     if (convos.every(function(c) { return c.response && c.response.length > 0; })) {
       var convos = convos.map(data.convert_response_date);
-      if (chart_request.budget)
+      if (chart_request.budget) {
         convos = data.calculate_budget(convos);
-      if (chart_request.accumulate)
+      }
+      if (chart_request.accumulate) {
         convos = convos.map(data.accumulate);
+      }
       return convos.map(data.convo_to_chart_data);
     }
   }
