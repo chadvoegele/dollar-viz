@@ -40,6 +40,7 @@ LedgerRequest.prototype.to_request_object = function() {
   var args = [
     '--empty',
     '--market',
+    '--no-revalued',
     '--period',
     build_period(this.frequency, this.start_date, this.end_date)
   ];
