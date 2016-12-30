@@ -1,5 +1,5 @@
 {
-  "name": "budget-charts",
+  "name": "dollar-viz",
   "version": "1.0.0",
   "description": "Charts built on top of ledger-rest.",
   "devDependencies": {

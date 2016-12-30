@@ -9,9 +9,9 @@ RUN \
     cd /tmp/closure-compiler-extract/closure-compiler-20160713 && \
     ant jar && \
     install -m755 -D build/compiler.jar /usr/share/java/closure-compiler/closure-compiler.jar
-COPY Gruntfile.js LICENSE package.json /usr/share/budget-charts/
-COPY www /usr/share/budget-charts/www
-WORKDIR /usr/share/budget-charts
+COPY Gruntfile.js LICENSE package.json /usr/share/dollar-viz/
+COPY www /usr/share/dollar-viz/www
+WORKDIR /usr/share/dollar-viz
 RUN \
       npm install && \
       /usr/bin/nodejs node_modules/grunt/bin/grunt build
