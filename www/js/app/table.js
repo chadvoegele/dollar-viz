@@ -41,7 +41,7 @@ function Table(start_date, end_date) {
     this.start_date = start_date;
   } else {
     var before_today = new Date(Date.now());
-    before_today.setMonth(before_today.getMonth() - 3)
+    before_today.setMonth(before_today.getMonth() - 2)
     before_today.setDate(1);
     this.start_date = before_today;
   }
@@ -57,10 +57,15 @@ Table.prototype.load = function () {
 
     }).then(function (accounts) {
       var accounts_request = accounts.join(" or ").split(" ");
+      var year_before_today = new Date(_this.end_date);
+      year_before_today.setMonth(year_before_today.getMonth() - 12)
       var requests =
         [
           new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, false, false),
-          new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, true, false)
+          new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, true, false),
+          // TODO: Would be cleaner to use no frequency and --subtotal
+          new LedgerRequest(accounts_request, "every 366 days", year_before_today, _this.end_date, false, false),
+          new LedgerRequest(accounts_request, "every 366 days", year_before_today, _this.end_date, true, false)
         ];
       return requests;
 
@@ -117,6 +122,7 @@ Table.prototype.processData = function (convos) {
           amount: row.amount,
           date: new Date(dateSlashes),
           account_name: row.account_name,
+          frequency: convo.request.frequency,
           budget: convo.request.budget
         };
       });
@@ -130,7 +136,7 @@ Table.prototype.processData = function (convos) {
 
   var tableParts = tableHTML.dataToPivottedTableParts({
     data: data,
-    columnKeys: [ 'date', 'budget' ],
+    columnKeys: [ 'date', 'budget', 'frequency' ],
     rowKeys: [ 'account_name' ]
   });
 
@@ -139,7 +145,7 @@ Table.prototype.processData = function (convos) {
       query: r.account_name,
       start_date: this.start_date.toLocaleDateString(),
       end_date: this.end_date.toLocaleDateString(),
-      frequency: 'monthly'
+      frequency: r.frequency
     };
     var linkOptions = Object.keys(chartOptions).map(function (k) {
       return k + '=' + encodeURIComponent(chartOptions[k]);
@@ -153,7 +159,7 @@ Table.prototype.processData = function (convos) {
 
   var columnFormatter = function (c) {
     return {
-      value: c.date.toLocaleDateString() + (c.budget ? '\nbudget' : '')
+      value: c.date.toLocaleDateString() + (c.budget ? '\nbudget' : '') + '\n' + c.frequency
     };
   };
 
