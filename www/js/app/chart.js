@@ -203,13 +203,25 @@ chart.update = function () {
   var budget = document.getElementById("budget").checked;
   var accumulate = document.getElementById("accumulate").checked;
 
+  var args = [ '--empty', '--market', '--no-revalued', '--collapse' ];
+  if (budget) {
+    args.push('--add-budget');
+  }
+
   if (query !== "") {
     if (frequency === "auto")
       frequency = chart.auto_frequency(start_date, end_date);
 
     var query_parts = query.trim().split(" ");
-    var chart_request = new ChartRequest(query_parts, frequency, start_date,
-      end_date, budget, true, accumulate);
+    var chart_request = new ChartRequest({
+      query: query_parts,
+      frequency: frequency,
+      start_date: start_date,
+      end_date: end_date,
+      args: args,
+      accumulate: accumulate,
+      budget: budget
+    });
     var requests = chart.build_ledger_requests(chart_request);
     var filter_chain = chart.build_filter_chain(chart_request);
 
@@ -221,12 +233,16 @@ chart.build_ledger_requests = function (chart_request) {
   if (chart_request.budget === false)
     return [chart_request];
   else {
-    var no_budget_request = new ChartRequest(chart_request.query,
-                                             chart_request.frequency,
-                                             chart_request.start_date,
-                                             chart_request.end_date,
-                                             false,
-                                             true, chart_request.accumulate);
+    var args = [ '--empty', '--market', '--no-revalued', '--collapse' ];
+    var no_budget_request = new ChartRequest({
+      query: chart_request.query,
+      frequency: chart_request.frequency,
+      start_date: chart_request.start_date,
+      end_date: chart_request.end_date,
+      args: args,
+      accumulate: chart_request.accumulate,
+      budget: false
+    });
     return [chart_request, no_budget_request];
   }
 }

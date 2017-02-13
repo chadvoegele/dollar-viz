@@ -25,9 +25,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function ChartRequest(query, frequency, start_date, end_date, budget, collapse, accumulate) {
-  LedgerRequest.call(this, query, frequency, start_date, end_date, budget, collapse);
-  this.accumulate = accumulate;
+function ChartRequest(options) {
+  LedgerRequest.call(this, options);
+  this.accumulate = options.accumulate;
+  this.budget = options.budget;
 }
 
 ChartRequest.prototype = Object.create(LedgerRequest.prototype);

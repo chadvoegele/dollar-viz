@@ -25,41 +25,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function LedgerRequest(query, frequency, start_date, end_date, budget, collapse) {
-  this.query = query;
-  this.frequency = frequency;
-  this.start_date = start_date;
-  this.end_date = end_date;
-  this.budget = budget;
-  this.collapse = collapse;
+function LedgerRequest(options) {
+  this.query = options.query;
+  this.frequency = options.frequency;
+  this.start_date = options.start_date;
+  this.end_date = options.end_date;
+  this.args = options.args;
 }
 
 LedgerRequest.prototype.base_url = '/ledger_rest/report/register';
 
 LedgerRequest.prototype.to_request_object = function() {
-  var args = [
-    '--empty',
-    '--market',
-    '--no-revalued',
-    '--period',
-    build_period(this.frequency, this.start_date, this.end_date)
-  ];
+  var args = this.args || [];
 
-  // Use either:
-  // 1. --collapse + (--add-budget)
-  // 2. (--actual) + --add-budget
-  if (this.collapse) {
-    args.push('--collapse');
-
-    if (this.budget) {
-      args.push('--add-budget');
-    }
-  } else {
-    args.push('--add-budget');
-
-    if (!this.budget) {
-      args.push('--actual');
-    }
+  var period = build_period(this.frequency, this.start_date, this.end_date);
+  if (period.length > 0) {
+    args.push('--period');
+    args.push(period);
   }
 
   return {
@@ -97,10 +79,8 @@ function date_to_string(date, separator) {
 }
 
 function build_period(frequency, start_date, end_date) {
-  var period = frequency;
-  if (start_date !== undefined)
-    period = period + " from " + date_to_string(start_date);
-  if (end_date !== undefined)
-    period = period + " to " + date_to_string(end_date);
-  return period;
+  var p = (frequency || '') +
+    (start_date && ' from ' + date_to_string(start_date) || '') +
+    (end_date && ' to ' + date_to_string(end_date) || '');
+  return p;
 }

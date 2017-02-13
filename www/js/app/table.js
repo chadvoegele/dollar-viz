@@ -59,13 +59,42 @@ Table.prototype.load = function () {
       var accounts_request = accounts.join(" or ").split(" ");
       var year_before_today = new Date(_this.end_date);
       year_before_today.setMonth(year_before_today.getMonth() - 12)
+
+      var base_args = [
+        '--empty',
+        '--market',
+        '--no-revalued',
+      ];
+      var budget_args = Array.from(base_args).concat('--add-budget');
+      var actual_args = Array.from(base_args).concat('--add-budget', '--actual');
       var requests =
         [
-          new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, false, false),
-          new LedgerRequest(accounts_request, "monthly", _this.start_date, _this.end_date, true, false),
-          // TODO: Would be cleaner to use no frequency and --subtotal
-          new LedgerRequest(accounts_request, "every 366 days", year_before_today, _this.end_date, false, false),
-          new LedgerRequest(accounts_request, "every 366 days", year_before_today, _this.end_date, true, false)
+          new LedgerRequest({
+            query: accounts_request,
+            frequency: "monthly",
+            start_date: _this.start_date,
+            end_date: _this.end_date,
+            args: actual_args
+          }),
+          new LedgerRequest({
+            query: accounts_request,
+            frequency: "monthly",
+            start_date: _this.start_date,
+            end_date: _this.end_date,
+            args: budget_args
+          }),
+          new LedgerRequest({
+            query: accounts_request,
+            start_date: year_before_today,
+            end_date: _this.end_date,
+            args: Array.from(actual_args).concat('--subtotal')
+          }),
+          new LedgerRequest({
+            query: accounts_request,
+            start_date: year_before_today,
+            end_date: _this.end_date,
+            args: Array.from(budget_args).concat('--subtotal')
+          })
         ];
       return requests;
 
@@ -122,8 +151,8 @@ Table.prototype.processData = function (convos) {
           amount: row.amount,
           date: new Date(dateSlashes),
           account_name: row.account_name,
-          frequency: convo.request.frequency,
-          budget: convo.request.budget
+          frequency: convo.request.frequency || 'total',
+          budget: convo.request.args.every(function (e) { return e!=='--actual'; })
         };
       });
       return agg.concat(rows);
