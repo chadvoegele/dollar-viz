@@ -170,11 +170,13 @@ Table.prototype.processData = function (convos) {
   });
 
   var rowFormatter = function (r) {
+    var year_before_today = new Date(this.end_date);
+    year_before_today.setMonth(year_before_today.getMonth() - 12)
     var chartOptions = {
       query: r.account_name,
-      start_date: this.start_date.toLocaleDateString(),
+      start_date: year_before_today.toLocaleDateString(),
       end_date: this.end_date.toLocaleDateString(),
-      frequency: r.frequency
+      frequency: 'monthly'
     };
     var linkOptions = Object.keys(chartOptions).map(function (k) {
       return k + '=' + encodeURIComponent(chartOptions[k]);
