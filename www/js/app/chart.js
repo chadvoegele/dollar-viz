@@ -69,10 +69,16 @@ chart.default_start_date = function () {
   return before_today;
 }
 
+chart.default_end_date = function () {
+  var today = new Date(Date.now());
+  return today;
+}
+
 chart.setup_datepicker = function () {
   $(".datepicker").datepicker({})
   .on("changeDate", function(e) { chart.update_timeout(); });
   $("#start_date.datepicker").datepicker("setDate", chart.default_start_date());
+  $("#end_date.datepicker").datepicker("setDate", chart.default_end_date());
 }
 
 chart.get_window_properties = function () {
