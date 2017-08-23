@@ -41,13 +41,13 @@ function Table(start_date, end_date) {
     this.start_date = start_date;
   } else {
     var before_today = new Date(Date.now());
-    before_today.setMonth(before_today.getMonth() - 2)
+    before_today.setMonth(before_today.getMonth() - 2);
     before_today.setDate(1);
     this.start_date = before_today;
   }
 
   this.cache = new Cache();
-};
+}
 
 Table.prototype.load = function () {
   var _this = this;
@@ -56,9 +56,9 @@ Table.prototype.load = function () {
       return response.json();
 
     }).then(function (accounts) {
-      var accounts_request = accounts.join(" or ").split(" ");
+      var accounts_request = accounts.join(' or ').split(' ');
       var year_before_today = new Date(_this.end_date);
-      year_before_today.setMonth(year_before_today.getMonth() - 12)
+      year_before_today.setMonth(year_before_today.getMonth() - 12);
 
       var base_args = [
         '--empty',
@@ -71,30 +71,30 @@ Table.prototype.load = function () {
         [
           new LedgerRequest({
             query: accounts_request,
-            frequency: "monthly",
+            frequency: 'monthly',
             start_date: _this.start_date,
             end_date: _this.end_date,
-            args: actual_args
+            args: actual_args,
           }),
           new LedgerRequest({
             query: accounts_request,
-            frequency: "monthly",
+            frequency: 'monthly',
             start_date: _this.start_date,
             end_date: _this.end_date,
-            args: budget_args
+            args: budget_args,
           }),
           new LedgerRequest({
             query: accounts_request,
             start_date: year_before_today,
             end_date: _this.end_date,
-            args: Array.from(actual_args).concat('--subtotal')
+            args: Array.from(actual_args).concat('--subtotal'),
           }),
           new LedgerRequest({
             query: accounts_request,
             start_date: year_before_today,
             end_date: _this.end_date,
-            args: Array.from(budget_args).concat('--subtotal')
-          })
+            args: Array.from(budget_args).concat('--subtotal'),
+          }),
         ];
       return requests;
 
@@ -103,23 +103,23 @@ Table.prototype.load = function () {
 
     }).catch(function (error) {
       console.error(error);
-    })
-}
+    });
+};
 
 Table.prototype.loadRequests = function (ledgerRequests) {
   var _this = this;
 
   var postRequests = ledgerRequests.map(function (lr) {
-    return lr.to_request_object()
+    return lr.to_request_object();
   });
 
   fetch(LedgerRequest.prototype.base_url, {
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(postRequests)
+    body: JSON.stringify(postRequests),
 
   }).then(function (responses) {
     return responses.json();
@@ -128,7 +128,7 @@ Table.prototype.loadRequests = function (ledgerRequests) {
     var requestResponsePairs = responsesJSON.map(function (r, i) {
       return {
         request: ledgerRequests[i],
-        response: responsesJSON[i]
+        response: responsesJSON[i],
       };
     });
     return requestResponsePairs;
@@ -137,7 +137,7 @@ Table.prototype.loadRequests = function (ledgerRequests) {
 
   ).catch(function (error) {
     console.error(error);
-  })
+  });
 };
 
 Table.prototype.processData = function (convos) {
@@ -152,7 +152,7 @@ Table.prototype.processData = function (convos) {
           date: new Date(dateSlashes),
           account_name: row.account_name,
           frequency: convo.request.frequency || 'total',
-          budget: convo.request.args.every(function (e) { return e!=='--actual'; })
+          budget: convo.request.args.every(function (e) { return e !== '--actual'; }),
         };
       });
       return agg.concat(rows);
@@ -166,17 +166,17 @@ Table.prototype.processData = function (convos) {
   var tableParts = tableHTML.dataToPivottedTableParts({
     data: data,
     columnKeys: [ 'date', 'budget', 'frequency' ],
-    rowKeys: [ 'account_name' ]
+    rowKeys: [ 'account_name' ],
   });
 
   var rowFormatter = function (r) {
     var year_before_today = new Date(this.end_date);
-    year_before_today.setMonth(year_before_today.getMonth() - 12)
+    year_before_today.setMonth(year_before_today.getMonth() - 12);
     var chartOptions = {
       query: r.account_name,
       start_date: year_before_today.toLocaleDateString(),
       end_date: this.end_date.toLocaleDateString(),
-      frequency: 'monthly'
+      frequency: 'monthly',
     };
     var linkOptions = Object.keys(chartOptions).map(function (k) {
       return k + '=' + encodeURIComponent(chartOptions[k]);
@@ -184,19 +184,19 @@ Table.prototype.processData = function (convos) {
     var linkHref = 'chart.html?' + linkOptions;
     var linkValue = '<a href="' + linkHref + '">' + r.account_name + '</a>';
     return {
-      value: linkValue
+      value: linkValue,
     };
   };
 
   var columnFormatter = function (c) {
     return {
-      value: c.date.toLocaleDateString() + (c.budget ? '\nbudget' : '') + '\n' + c.frequency
+      value: c.date.toLocaleDateString() + (c.budget ? '\nbudget' : '') + '\n' + c.frequency,
     };
   };
 
   var dataFormatter = function (d) {
     var formattedData = {
-      value: ''
+      value: '',
     };
 
     if (d && d.amount) {
@@ -205,8 +205,8 @@ Table.prototype.processData = function (convos) {
 
     if (d && d.amount && d.budget) {
       formattedData.attributes = {
-        class: d.amount < 0 ? 'success' : 'danger'
-      }
+        class: d.amount < 0 ? 'success' : 'danger',
+      };
     }
 
     return formattedData;
@@ -217,8 +217,8 @@ Table.prototype.processData = function (convos) {
     formatterParts: {
       row: rowFormatter.bind(this),
       column: columnFormatter,
-      data: dataFormatter
-    }
+      data: dataFormatter,
+    },
   });
 
   var tableClasses = 'table table-striped table-hover table-bordered table-condensed';
@@ -268,8 +268,8 @@ recordsCSV.dataToTable = function (data) {
   var headers = Array.from(keys.keys());
   var table = data.reduce(function (agg, rowObj) {
     var rowArray = headers.map(function (h) { return rowObj[h] || null; });
-    return agg.concat([rowArray]);
-  }, [headers]);
+    return agg.concat([ rowArray ]);
+  }, [ headers ]);
 
   return table;
 };
@@ -404,8 +404,8 @@ tableHTML.dataToPivottedTableParts = function (args) {
     var row = columnHeaders.map(function (columnHeader) {
       var columnData = filterData(rowData, columnHeader);
       if (columnData.length > 1) {
-        console.error('More than one entry found for row: ' + JSON.stringify(rowHeader)
-          + ', column: ' + JSON.stringify(columnHeader) + '. Using first match.');
+        console.error('More than one entry found for row: ' + JSON.stringify(rowHeader) +
+          ', column: ' + JSON.stringify(columnHeader) + '. Using first match.');
       }
       return columnData[0];
     });
@@ -414,7 +414,7 @@ tableHTML.dataToPivottedTableParts = function (args) {
   return {
     rows: rowHeaders,
     columns: columnHeaders,
-    data: tableData
+    data: tableData,
   };
 };
 
@@ -452,11 +452,12 @@ tableHTML.dataToPivottedTableParts = function (args) {
  *  ]
  */
 tableHTML.tablePartsToTable = function (args) {
-  var headerRow = [''].concat(args.tableParts.columns.map(args.formatterParts.column));
-  var dataRows = args.tableParts.rows.map(function(r, i) {
-    return [args.formatterParts.row(r)].concat(args.tableParts.data[i].map(args.formatterParts.data));
+  var headerRow = [ '' ].concat(args.tableParts.columns.map(args.formatterParts.column));
+  var dataRows = args.tableParts.rows.map(function (r, i) {
+    var formatted = args.tableParts.data[i].map(args.formatterParts.data);
+    return [ args.formatterParts.row(r) ].concat(formatted);
   });
-  var table = [headerRow].concat(dataRows);
+  var table = [ headerRow ].concat(dataRows);
   return table;
 };
 

@@ -25,11 +25,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var ObjectSet = function() {
+var ObjectSet = function () {
   this.entries = [];
-}
+};
 
-ObjectSet.prototype.add = function(entry) {
+ObjectSet.prototype.add = function (entry) {
   var hasEntryInSet = this.entries.some(function (setEntry) {
     return JSON.stringify(setEntry) === JSON.stringify(entry);
   });
@@ -38,6 +38,6 @@ ObjectSet.prototype.add = function(entry) {
   }
 };
 
-ObjectSet.prototype.keys = function() {
+ObjectSet.prototype.keys = function () {
   return this.entries;
 };

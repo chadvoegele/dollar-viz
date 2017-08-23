@@ -35,7 +35,7 @@ function LedgerRequest(options) {
 
 LedgerRequest.prototype.base_url = '/ledger_rest/report/register';
 
-LedgerRequest.prototype.to_request_object = function() {
+LedgerRequest.prototype.to_request_object = function () {
   var args = this.args || [];
 
   var period = build_period(this.frequency, this.start_date, this.end_date);
@@ -46,34 +46,34 @@ LedgerRequest.prototype.to_request_object = function() {
 
   return {
     args: args,
-    query: this.query
+    query: this.query,
   };
-}
+};
 
-LedgerRequest.prototype.build_url = function() {
+LedgerRequest.prototype.build_url = function () {
   var request = this.to_request_object();
 
   var url_args = request.args
-    .map(function (s) { return "args=" + s; })
-    .join("&");
+    .map(function (s) { return 'args=' + s; })
+    .join('&');
 
   var url_query = request.query
-    .map(function(s){ return "query=" + s; })
-    .join("&");
+    .map(function (s) { return 'query=' + s; })
+    .join('&');
 
   var url = this.base_url + '?' + url_args + '&' + url_query;
 
   return url;
-}
+};
 
 function date_to_string(date, separator) {
   if (separator === undefined) {
-    separator = "/";
+    separator = '/';
   }
 
-  var date_str = date.getFullYear() + separator
-                 + (1 + date.getMonth()) + separator
-                 + date.getDate();
+  var date_str = date.getFullYear() + separator +
+                 (1 + date.getMonth()) + separator +
+                 date.getDate();
 
   return date_str;
 }

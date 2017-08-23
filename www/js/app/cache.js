@@ -29,10 +29,10 @@ function Cache() {
   this.data = {};
 }
 
-Cache.prototype.get_data = function(key) {
+Cache.prototype.get_data = function (key) {
   return this.data[key];
-}
+};
 
-Cache.prototype.set_data = function(data, key) {
+Cache.prototype.set_data = function (data, key) {
   this.data[key] = data;
-}
+};

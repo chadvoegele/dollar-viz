@@ -31,17 +31,18 @@ data.single_json_callback = function (expected_response_count, convos, request, 
   if (error) {
     console.warn(error);
   } else if (json.length === 0) {
-    console.warn("No data received.");
+    console.warn('No data received.');
   }
   convos.push({ request: request, response: json });
-  if (convos.length === expected_response_count)
+  if (convos.length === expected_response_count) {
     callback(convos);
-}
+  }
+};
 
 data.multi_json = function (requests, callback) {
   var convos = [];
-  requests.forEach(function(request) {
-    d3.json(request.build_url(), function(error, json) {
+  requests.forEach(function (request) {
+    d3.json(request.build_url(), function (error, json) {
       return data.single_json_callback(requests.length, convos, request, callback,
         error, json);
     });
@@ -49,97 +50,107 @@ data.multi_json = function (requests, callback) {
 };
 
 data.convert_response_date = function (convos) {
-  convos.response.forEach(function(d) {
+  convos.response.forEach(function (d) {
     d.date = new Date(d.date);
   });
   return convos;
-}
+};
 
 data.mode = function (d) {
   var counts = [];
+  var i;
 
-  for (var i = 0; i < d.length; i++) {
+  for (i = 0; i < d.length; i++) {
     var x = d[i];
-    if (counts[x] === undefined)
+    if (counts[x] === undefined) {
       counts[x] = 0;
-    else
+    } else {
       counts[x] = counts[x] + 1;
+    }
   }
 
+  var max_key;
   var keys = Object.keys(counts);
   var max_key_count = 0;
-  for (var i = 0; i < keys.length; i++) {
+  for (i = 0; i < keys.length; i++) {
     var key = keys[i];
     if (counts[key] > max_key_count) {
       max_key_count = counts[key];
-      var max_key = key;
+      max_key = key;
     }
   }
 
   return max_key;
-}
+};
 
-data.get_chart_data_name = function(convo) {
+data.get_chart_data_name = function (convo) {
   if (convo.response.length > 0) {
     var most_common_account = data.mode(
-      convo.response.filter(function(d) { return Math.abs(d.amount) > 0; })
-      .map(function(d) { return d.account_name; })
+      convo.response.filter(function (d) { return Math.abs(d.amount) > 0; })
+      .map(function (d) { return d.account_name; })
       );
-    if (most_common_account === undefined)
-      most_common_account = "";
+    if (most_common_account === undefined) {
+      most_common_account = '';
+    }
 
-    if (convo.request.budget)
-      return "Budget for " + most_common_account;
-    else
+    if (convo.request.budget) {
+      return 'Budget for ' + most_common_account;
+    } else {
       return most_common_account;
-  } else
-    return "";
-}
+    }
+  } else {
+    return '';
+  }
+};
 
-data.get_chart_data_style = function(convo) {
-  if (convo.request.budget)
-    return "budget_line";
-  else
-    return "register_line";
-}
+data.get_chart_data_style = function (convo) {
+  if (convo.request.budget) {
+    return 'budget_line';
+  } else {
+    return 'register_line';
+  }
+};
 
-data.convo_to_chart_data = function(convo) {
+data.convo_to_chart_data = function (convo) {
   var chart_data = {
-    name : data.get_chart_data_name(convo),
-    style : data.get_chart_data_style(convo),
-    d : convo.response,
-    get_x : function(d) { return d.date; },
-    get_y : function(d) { return d.amount; },
-    is_budget : convo.request.budget
+    name: data.get_chart_data_name(convo),
+    style: data.get_chart_data_style(convo),
+    d: convo.response,
+    get_x: function (d) { return d.date; },
+    get_y: function (d) { return d.amount; },
+    is_budget: convo.request.budget,
   };
   return chart_data;
-}
+};
 
-data.union_sort = function(a, b, compare) {
+data.union_sort = function (a, b, compare) {
   var joined_sorted = a.concat(b).sort(compare);
-  var reduce_fn = function(agg, value, index, array) {
-    if (agg.length === 0)
-      agg.push(value)
-    else {
+  var reduce_fn = function (agg, value, index, array) {
+    if (agg.length === 0) {
+      agg.push(value);
+    } else {
       var last_value = agg[agg.length - 1];
-      if (compare(last_value, value) !== 0)
+      if (compare(last_value, value) !== 0) {
         agg.push(value);
+      }
     }
     return agg;
   };
   var unique_sorted = joined_sorted.reduce(reduce_fn, []);
   return unique_sorted;
-}
+};
 
-data.align_to_dates = function(all_dates, response) {
-  var default_account = data.mode(response.map(function(d) { return d.account_name; }));
+data.align_to_dates = function (all_dates, response) {
+  var default_account = data.mode(response.map(function (d) { return d.account_name; }));
 
   var aligned_response = [];
   var all_index = 0;
   while (all_dates[all_index].getTime() < response[0].date.getTime()) {
-    aligned_response.push({amount: 0,
-                           date: all_dates[all_index],
-                           account: default_account});
+    aligned_response.push({
+      amount: 0,
+      date: all_dates[all_index],
+      account: default_account,
+    });
     all_index = all_index + 1;
   }
 
@@ -152,46 +163,51 @@ data.align_to_dates = function(all_dates, response) {
       all_index = all_index + 1;
     } else {
       while (all_dates[all_index].getTime() < response[response_index].date.getTime()) {
-        aligned_response.push({amount: 0,
-                               date: all_dates[all_index],
-                               account: default_account});
+        aligned_response.push({
+          amount: 0,
+          date: all_dates[all_index],
+          account: default_account,
+        });
         all_index = all_index + 1;
       }
     }
   }
 
   while (all_index < all_dates.length) {
-    aligned_response.push({amount: 0,
-                           date: all_dates[all_index],
-                           account: default_account});
+    aligned_response.push({
+      amount: 0,
+      date: all_dates[all_index],
+      account: default_account,
+    });
     all_index = all_index + 1;
   }
 
   return aligned_response;
-}
+};
 
-data.calculate_budget = function(convos) {
+data.calculate_budget = function (convos) {
+  var budget;
+  var no_budget;
   if (convos.length !== 2) {
-    console.warn("Budget calculation should only have register and add-budget!");
+    console.warn('Budget calculation should only have register and add-budget!');
     return [];
   } else {
     if (convos[0].request.budget &&
         !convos[1].request.budget) {
-      var budget = convos[0];
-      var no_budget = convos[1];
-    }
-    else if (!convos[0].request.budget &&
+      budget = convos[0];
+      no_budget = convos[1];
+    } else if (!convos[0].request.budget &&
                  convos[1].request.budget) {
-      var no_budget = convos[0];
-      var budget = convos[1];
+      no_budget = convos[0];
+      budget = convos[1];
     } else {
-      console.warn("Budget calculation should exactly have register and add-budget!");
+      console.warn('Budget calculation should exactly have register and add-budget!');
       return [];
     }
-    var date_accessor = function(d) { return d.date; };
+    var date_accessor = function (d) { return d.date; };
     var all_dates = data.union_sort(budget.response.map(date_accessor),
                                no_budget.response.map(date_accessor),
-                               function(a, b) { return a.getTime() - b.getTime(); });
+                               function (a, b) { return a.getTime() - b.getTime(); });
     budget.response = data.align_to_dates(all_dates, budget.response);
     no_budget.response = data.align_to_dates(all_dates, no_budget.response);
 
@@ -199,19 +215,18 @@ data.calculate_budget = function(convos) {
     // recover original budget as budget = register - add-budget.
     // dates are already aligned by align_to_dates.
     for (var i = 0; i < budget.response.length; i++) {
-      budget.response[i].amount = no_budget.response[i].amount
-                                  - budget.response[i].amount;
+      budget.response[i].amount = no_budget.response[i].amount - budget.response[i].amount;
     }
 
-    return [budget, no_budget];
+    return [ budget, no_budget ];
   }
-}
+};
 
-data.accumulate = function(convo) {
+data.accumulate = function (convo) {
   var running_total = 0;
   convo.response.forEach(function (d) {
     running_total = running_total + d.amount;
     d.amount = running_total;
   });
   return convo;
-}
+};
