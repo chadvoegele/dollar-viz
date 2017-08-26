@@ -51,63 +51,49 @@ function Table(start_date, end_date) {
 
 Table.prototype.load = function () {
   var _this = this;
-  fetch('/ledger_rest/budget_accounts')
-    .then(function (response) {
-      return response.json();
 
-    }).then(function (accounts) {
-      var accounts_request = accounts.join(' or ').split(' ');
-      var year_before_today = new Date(_this.end_date);
-      year_before_today.setMonth(year_before_today.getMonth() - 12);
+  var base_args = [
+    '--empty',
+    '--market',
+    '--no-revalued',
+  ];
+  var budget_args = Array.from(base_args).concat('--add-budget');
+  var actual_args = Array.from(base_args).concat('--add-budget', '--actual');
 
-      var base_args = [
-        '--empty',
-        '--market',
-        '--no-revalued',
-      ];
-      var budget_args = Array.from(base_args).concat('--add-budget');
-      var actual_args = Array.from(base_args).concat('--add-budget', '--actual');
-      var requests =
-        [
-          new LedgerRequest({
-            query: accounts_request,
-            frequency: 'monthly',
-            start_date: _this.start_date,
-            end_date: _this.end_date,
-            args: actual_args,
-          }),
-          new LedgerRequest({
-            query: accounts_request,
-            frequency: 'monthly',
-            start_date: _this.start_date,
-            end_date: _this.end_date,
-            args: budget_args,
-          }),
-          new LedgerRequest({
-            query: accounts_request,
-            start_date: year_before_today,
-            end_date: _this.end_date,
-            args: Array.from(actual_args).concat('--subtotal'),
-          }),
-          new LedgerRequest({
-            query: accounts_request,
-            start_date: year_before_today,
-            end_date: _this.end_date,
-            args: Array.from(budget_args).concat('--subtotal'),
-          }),
-        ];
-      return requests;
-
-    }).then(function (ledgerRequests) {
-      _this.loadRequests(ledgerRequests);
-
-    }).catch(function (error) {
-      console.error(error);
-    });
-};
-
-Table.prototype.loadRequests = function (ledgerRequests) {
-  var _this = this;
+  var ledgerRequests = [
+    new LedgerRequest({
+      frequency: 'monthly',
+      start_date: _this.start_date,
+      end_date: _this.end_date,
+      args: actual_args,
+    }),
+    new LedgerRequest({
+      frequency: 'monthly',
+      start_date: _this.start_date,
+      end_date: _this.end_date,
+      args: budget_args,
+    }),
+    new LedgerRequest({
+      start_date: monthsBefore(_this.end_date, 12),
+      end_date: _this.end_date,
+      args: Array.from(actual_args).concat('--subtotal'),
+    }),
+    new LedgerRequest({
+      start_date: monthsBefore(_this.end_date, 12),
+      end_date: _this.end_date,
+      args: Array.from(budget_args).concat('--subtotal'),
+    }),
+    new LedgerRequest({
+      start_date: monthsBefore(_this.end_date, 60),
+      end_date: _this.end_date,
+      args: Array.from(actual_args).concat('--subtotal'),
+    }),
+    new LedgerRequest({
+      start_date: monthsBefore(_this.end_date, 60),
+      end_date: _this.end_date,
+      args: Array.from(budget_args).concat('--subtotal'),
+    }),
+  ];
 
   var postRequests = ledgerRequests.map(function (lr) {
     return lr.to_request_object();
@@ -133,9 +119,42 @@ Table.prototype.loadRequests = function (ledgerRequests) {
     });
     return requestResponsePairs;
 
-  }).then(_this.processData.bind(_this)
+  }).then(function removeInactiveAccounts(datas) {
+    var accounts = datas
+    .filter(function (data) {
+      return !!data.request.frequency;
+    })
+    .map(function (data) {
+      return data.response.map(function (record) {
+        return record.account_name;
+      });
+    })
+    .reduce(function (a, b) {
+      return a.concat(b);
+    });
 
-  ).catch(function (error) {
+    var accounts_set = new Set(accounts);
+    datas = datas.map(function (data) {
+      if (!!data.request.frequency) {
+        return data;
+      }
+
+      var filteredResponses = data.response
+      .filter(function (record) {
+        return accounts_set.has(record.account_name);
+      });
+
+      return {
+        request: data.request,
+        response: filteredResponses,
+      };
+    });
+
+    return datas;
+
+  }).then(_this.processData.bind(_this))
+
+  .catch(function (error) {
     console.error(error);
   });
 };
@@ -521,4 +540,10 @@ tableHTML.tableToHTML = function (table, tableClasses) {
     }).join('') +
     '\n</table>';
   return HTML;
+};
+
+var monthsBefore = function (today, months) {
+  var before_today = new Date(today);
+  before_today.setMonth(before_today.getMonth() - months);
+  return before_today;
 };
