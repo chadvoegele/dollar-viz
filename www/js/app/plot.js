@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Chad Voegele
+ * Copyright (c) 2015-2017 Chad Voegele
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
