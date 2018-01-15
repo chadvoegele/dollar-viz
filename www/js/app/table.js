@@ -106,6 +106,7 @@ Table.prototype.load = function () {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(postRequests),
+    credentials: 'same-origin',
 
   }).then(function (responses) {
     return responses.json();
