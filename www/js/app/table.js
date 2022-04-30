@@ -28,7 +28,12 @@
 // Many thanks to:
 // http://halistechnology.com/2015/05/28/use-javascript-to-export-your-data-as-csv/
 
-function Table(start_date, end_date) {
+import { LedgerRequest } from './LedgerRequest';
+import { ObjectSet } from './ObjectSet';
+import { Cache } from './cache';
+import '../../css/table.css';
+
+export function Table(start_date, end_date) {
   if (end_date) {
     this.end_date = end_date;
   } else {
@@ -49,7 +54,7 @@ function Table(start_date, end_date) {
   this.cache = new Cache();
 }
 
-Table.prototype.load = function () {
+Table.prototype.load = function (document) {
   var _this = this;
 
   var base_args = [

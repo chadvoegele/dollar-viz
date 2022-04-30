@@ -27,10 +27,9 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap-datepicker3.standalone.min.css"/>
-    <link rel="stylesheet" type="text/css" href="css/chart.css"/>
+    <link rel="stylesheet" type="text/css" href="bootstrap-datepicker3.standalone.min.css"/>
   </head>
-  <body onload="chart.setup_page()">
+  <body>
     <div class="row">
       <div class="col-lg-2 col-md-2 col-sm-1 col-xs-0"></div>
       <div id="query_options_div" class="col-lg-8 col-md-8 col-sm-10 col-xs-12">
@@ -40,7 +39,7 @@
               <input class="typeahead" id="query" type="text"
                      data-toggle="tooltip" data-placement="bottom"
                      title="Try &quot;expenses&quot; or &quot;income&quot;"
-                     placeholder="Account" oninput="chart.update_timeout()"/>
+                     placeholder="Account"/>
             </div>
           </div>
           <div class="form-group">
@@ -56,8 +55,7 @@
                 Frequency
               </label>
               <div class="col-lg-10 col-md-10 col-sm-9 col-xs-8">
-                <select class="form-control" id="frequency"
-                                             onchange="chart.update_timeout()">
+                <select class="form-control" id="frequency">
                   <option value="auto">Auto</option>
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
@@ -83,7 +81,7 @@
                     Budget
                   </label>
                   <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8">
-                    <input id="budget" type="checkbox" onchange="chart.update_timeout()" checked/>
+                    <input id="budget" type="checkbox" checked/>
                   </div>
                 </div>
               </div>
@@ -93,7 +91,7 @@
                     Accumulate
                   </label>
                   <div class="col-lg-9 col-md-8 col-sm-8 col-xs-6">
-                    <input id="accumulate" type="checkbox" onchange="chart.update_timeout()"/>
+                    <input id="accumulate" type="checkbox"/>
                   </div>
                 </div>
               </div>
@@ -110,8 +108,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
-    <script type="text/javascript" src="js/vendor/bootstrap-datepicker.min.js"></script>
-    <script type="text/javascript" src="js/vendor/arg-1.3.1.min.js"></script>
-    <script type="text/javascript" src="js/app/app.min.js"></script>
+    <script type="text/javascript" src="bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript" src="arg-1.3.1.min.js"></script>
   </body>
 </html>

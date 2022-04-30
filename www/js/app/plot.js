@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var plot = {};
+export var plot = {};
 plot.plot_data = function (svg, data, config) {
   for (var i = 0; i < data.length; i++) {
     if (data[i].d.length < 2) {
@@ -73,7 +73,7 @@ plot.plot_data = function (svg, data, config) {
   .attr('height', config.svg_height)
   .attr('class', 'border_rect');
 
-  svg_offset = plot.append_if_missing(svg, 'g', 'svgoffset');
+  var svg_offset = plot.append_if_missing(svg, 'g', 'svgoffset');
 
   svg_offset
   .transition()
@@ -131,7 +131,7 @@ plot.calc_x_tick_label_properties = function (svg, xaxis, x_tick_label_font_size
 };
 
 plot.plot_axis_labels = function (svg_offset, config, computed, xaxis, yaxis, x_tick_label_rotate) {
-  yaxis_g = plot.append_if_missing(svg_offset, 'g', 'yaxis');
+  var yaxis_g = plot.append_if_missing(svg_offset, 'g', 'yaxis');
 
   yaxis_g
   .transition()
@@ -152,7 +152,7 @@ plot.plot_axis_labels = function (svg_offset, config, computed, xaxis, yaxis, x_
     }
   });
 
-  yaxis_label = plot.append_if_missing(yaxis_g, 'text', 'yaxis_label');
+  var yaxis_label = plot.append_if_missing(yaxis_g, 'text', 'yaxis_label');
 
   yaxis_label
   .transition()
@@ -164,7 +164,7 @@ plot.plot_axis_labels = function (svg_offset, config, computed, xaxis, yaxis, x_
   .attr('font-size', plot.font_pt_str(config.y_label_font_size))
   .attr('class', 'label_text');
 
-  xaxis_g = plot.append_if_missing(svg_offset, 'g', 'xaxis');
+  var xaxis_g = plot.append_if_missing(svg_offset, 'g', 'xaxis');
 
   xaxis_g
   .transition()
@@ -190,7 +190,7 @@ plot.plot_axis_labels = function (svg_offset, config, computed, xaxis, yaxis, x_
       plot.get_approx_font_px_height(config.x_tick_label_font_size) + ')');
   });
 
-  xaxis_label = plot.append_if_missing(xaxis_g, 'text', 'xaxis_label');
+  var xaxis_label = plot.append_if_missing(xaxis_g, 'text', 'xaxis_label');
 
   xaxis_label
   .transition()

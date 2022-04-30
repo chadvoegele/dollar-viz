@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var ObjectSet = function () {
+export function ObjectSet() {
   this.entries = [];
 };
 

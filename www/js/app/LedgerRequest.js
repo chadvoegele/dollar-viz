@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function LedgerRequest(options) {
+export function LedgerRequest(options) {
   this.query = options.query;
   this.frequency = options.frequency;
   this.start_date = options.start_date;

@@ -31,8 +31,15 @@
 //   http://bl.ocks.org/syntagmatic/4053096
 //   https://www.safaribooksonline.com/blog/2014/03/11/solving-d3-label-placement-constraint-relaxing/
 
+
+import '../../css/chart.css';
+import { Cache } from './cache';
+import { ChartRequest } from './ChartRequest';
+import { data } from './data';
+import { plot } from './plot';
+
 var cache = new Cache();
-var chart = {};
+export var chart = {};
 
 chart.setup_page = function () {
   chart.setup_typeahead();
@@ -41,6 +48,10 @@ chart.setup_page = function () {
   chart.setup_more_options_collapse();
   chart.setup_uri_args();
   window.onresize = function () { chart.resize_graph(); };
+  document.getElementById('accumulate').addEventListener('change', function () {chart.update_timeout()});
+  document.getElementById('budget').addEventListener('change', function () {chart.update_timeout()});
+  document.getElementById('frequency').addEventListener('change', function () {chart.update_timeout()});
+  document.getElementById('query').addEventListener('input', function () {chart.update_timeout()});
 };
 
 chart.setup_typeahead = function () {

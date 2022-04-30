@@ -25,7 +25,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var data = {};
+export var data = {};
+
 data.single_json_callback = function (expected_response_count, convos, request, callback,
   error, json) {
   if (error) {
