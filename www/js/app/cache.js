@@ -25,14 +25,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-export function Cache() {
-  this.data = {};
+export function Cache () {
+  this.data = {}
 }
 
 Cache.prototype.get_data = function (key) {
-  return this.data[key];
-};
+  return this.data[key]
+}
 
 Cache.prototype.set_data = function (data, key) {
-  this.data[key] = data;
-};
+  this.data[key] = data
+}

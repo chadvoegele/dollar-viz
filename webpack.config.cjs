@@ -37,7 +37,7 @@ module.exports = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: "www/js/vendor/arg-1.3.1.min.js" },
+        { from: "www/js/vendor/arg-1.3.min.js" },
         { from: "www/js/vendor/bootstrap-datepicker.min.js" },
         { from: "www/css/bootstrap-datepicker3.standalone.min.css" },
       ],

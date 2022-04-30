@@ -1,14 +1,14 @@
-import { Table } from './table';
-import { chart } from './chart';
+import { Table } from './table'
+import { chart } from './chart'
 
-function main() {
+function main () {
   if (document.getElementById('thetable')) {
-    window.table = new Table();
-    window.table.load(document);
+    window.table = new Table()
+    window.table.load(document)
   }
   if (document.getElementById('the_graph')) {
-    chart.setup_page();
+    chart.setup_page()
   }
 }
 
-main();
+main()

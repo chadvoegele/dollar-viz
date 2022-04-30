@@ -25,62 +25,62 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-export function LedgerRequest(options) {
-  this.query = options.query;
-  this.frequency = options.frequency;
-  this.start_date = options.start_date;
-  this.end_date = options.end_date;
-  this.args = options.args;
+export function LedgerRequest (options) {
+  this.query = options.query
+  this.frequency = options.frequency
+  this.start_date = options.start_date
+  this.end_date = options.end_date
+  this.args = options.args
 }
 
-LedgerRequest.prototype.base_url = '/ledger_rest/report/register';
+LedgerRequest.prototype.base_url = '/ledger_rest/report/register'
 
 LedgerRequest.prototype.to_request_object = function () {
-  var args = this.args || [];
+  const args = this.args || []
 
-  var period = build_period(this.frequency, this.start_date, this.end_date);
+  const period = build_period(this.frequency, this.start_date, this.end_date)
   if (period.length > 0) {
-    args.push('--period');
-    args.push(period);
+    args.push('--period')
+    args.push(period)
   }
 
   return {
-    args: args,
-    query: this.query,
-  };
-};
-
-LedgerRequest.prototype.build_url = function () {
-  var request = this.to_request_object();
-
-  var url_args = request.args
-    .map(function (s) { return 'args=' + s; })
-    .join('&');
-
-  var url_query = request.query
-    .map(function (s) { return 'query=' + s; })
-    .join('&');
-
-  var url = this.base_url + '?' + url_args + '&' + url_query;
-
-  return url;
-};
-
-function date_to_string(date, separator) {
-  if (separator === undefined) {
-    separator = '/';
+    args,
+    query: this.query
   }
-
-  var date_str = date.getFullYear() + separator +
-                 (1 + date.getMonth()) + separator +
-                 date.getDate();
-
-  return date_str;
 }
 
-function build_period(frequency, start_date, end_date) {
-  var p = (frequency || '') +
-    (start_date && ' from ' + date_to_string(start_date) || '') +
-    (end_date && ' to ' + date_to_string(end_date) || '');
-  return p;
+LedgerRequest.prototype.build_url = function () {
+  const request = this.to_request_object()
+
+  const url_args = request.args
+    .map(function (s) { return 'args=' + s })
+    .join('&')
+
+  const url_query = request.query
+    .map(function (s) { return 'query=' + s })
+    .join('&')
+
+  const url = this.base_url + '?' + url_args + '&' + url_query
+
+  return url
+}
+
+function date_to_string (date, separator) {
+  if (separator === undefined) {
+    separator = '/'
+  }
+
+  const date_str = date.getFullYear() + separator +
+                 (1 + date.getMonth()) + separator +
+                 date.getDate()
+
+  return date_str
+}
+
+function build_period (frequency, start_date, end_date) {
+  const p = (frequency || '') +
+    ((start_date && ' from ' + date_to_string(start_date)) || '') +
+    ((end_date && ' to ' + date_to_string(end_date)) || '')
+  return p
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "webpack serve",
     "build": "webpack",
-    "format": "eslint src test --fix"
+    "format": "eslint www --fix"
   },
   "dependencies": {
     "clean-webpack-plugin": "^4.0.0",

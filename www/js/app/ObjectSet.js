@@ -25,19 +25,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-export function ObjectSet() {
-  this.entries = [];
+export function ObjectSet () {
+  this.entries = []
 };
 
 ObjectSet.prototype.add = function (entry) {
-  var hasEntryInSet = this.entries.some(function (setEntry) {
-    return JSON.stringify(setEntry) === JSON.stringify(entry);
-  });
+  const hasEntryInSet = this.entries.some(function (setEntry) {
+    return JSON.stringify(setEntry) === JSON.stringify(entry)
+  })
   if (!hasEntryInSet) {
-    this.entries.push(entry);
+    this.entries.push(entry)
   }
-};
+}
 
 ObjectSet.prototype.keys = function () {
-  return this.entries;
-};
+  return this.entries
+}

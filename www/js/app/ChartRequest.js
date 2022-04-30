@@ -25,14 +25,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { LedgerRequest } from './LedgerRequest'
 
-import { LedgerRequest } from './LedgerRequest';
-
-
-export function ChartRequest(options) {
-  LedgerRequest.call(this, options);
-  this.accumulate = options.accumulate;
-  this.budget = options.budget;
+export function ChartRequest (options) {
+  LedgerRequest.call(this, options)
+  this.accumulate = options.accumulate
+  this.budget = options.budget
 }
 
-ChartRequest.prototype = Object.create(LedgerRequest.prototype);
+ChartRequest.prototype = Object.create(LedgerRequest.prototype)

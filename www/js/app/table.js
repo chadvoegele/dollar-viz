@@ -28,245 +28,242 @@
 // Many thanks to:
 // http://halistechnology.com/2015/05/28/use-javascript-to-export-your-data-as-csv/
 
-import { LedgerRequest } from './LedgerRequest';
-import { ObjectSet } from './ObjectSet';
-import { Cache } from './cache';
-import '../../css/table.css';
+import { LedgerRequest } from './LedgerRequest'
+import { ObjectSet } from './ObjectSet'
+import { Cache } from './cache'
+import '../../css/table.css'
 
-export function Table(start_date, end_date) {
+export function Table (start_date, end_date) {
   if (end_date) {
-    this.end_date = end_date;
+    this.end_date = end_date
   } else {
-    this.end_date = new Date(Date.now());
+    this.end_date = new Date(Date.now())
     // ledger uses date before end date in period expressions
-    this.end_date.setDate(this.end_date.getDate() + 1);
+    this.end_date.setDate(this.end_date.getDate() + 1)
   }
 
   if (start_date) {
-    this.start_date = start_date;
+    this.start_date = start_date
   } else {
-    var before_today = new Date(Date.now());
-    before_today.setMonth(before_today.getMonth() - 2);
-    before_today.setDate(1);
-    this.start_date = before_today;
+    const before_today = new Date(Date.now())
+    before_today.setMonth(before_today.getMonth() - 2)
+    before_today.setDate(1)
+    this.start_date = before_today
   }
 
-  this.cache = new Cache();
+  this.cache = new Cache()
 }
 
 Table.prototype.load = function (document) {
-  var _this = this;
+  const _this = this
 
-  var base_args = [
+  const base_args = [
     '--empty',
     '--market',
-    '--no-revalued',
-  ];
-  var budget_args = Array.from(base_args).concat('--add-budget');
-  var actual_args = Array.from(base_args).concat('--add-budget', '--actual');
+    '--no-revalued'
+  ]
+  const budget_args = Array.from(base_args).concat('--add-budget')
+  const actual_args = Array.from(base_args).concat('--add-budget', '--actual')
 
-  var ledgerRequests = [
+  const ledgerRequests = [
     new LedgerRequest({
       frequency: 'monthly',
       start_date: _this.start_date,
       end_date: _this.end_date,
-      args: actual_args,
+      args: actual_args
     }),
     new LedgerRequest({
       frequency: 'monthly',
       start_date: _this.start_date,
       end_date: _this.end_date,
-      args: budget_args,
+      args: budget_args
     }),
     new LedgerRequest({
       start_date: monthsBefore(_this.end_date, 12),
       end_date: _this.end_date,
-      args: Array.from(actual_args).concat('--subtotal'),
+      args: Array.from(actual_args).concat('--subtotal')
     }),
     new LedgerRequest({
       start_date: monthsBefore(_this.end_date, 12),
       end_date: _this.end_date,
-      args: Array.from(budget_args).concat('--subtotal'),
+      args: Array.from(budget_args).concat('--subtotal')
     }),
     new LedgerRequest({
       start_date: monthsBefore(_this.end_date, 60),
       end_date: _this.end_date,
-      args: Array.from(actual_args).concat('--subtotal'),
+      args: Array.from(actual_args).concat('--subtotal')
     }),
     new LedgerRequest({
       start_date: monthsBefore(_this.end_date, 60),
       end_date: _this.end_date,
-      args: Array.from(budget_args).concat('--subtotal'),
-    }),
-  ];
+      args: Array.from(budget_args).concat('--subtotal')
+    })
+  ]
 
-  var postRequests = ledgerRequests.map(function (lr) {
-    return lr.to_request_object();
-  });
+  const postRequests = ledgerRequests.map(function (lr) {
+    return lr.to_request_object()
+  })
 
   fetch(LedgerRequest.prototype.base_url, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(postRequests),
-    credentials: 'same-origin',
+    credentials: 'same-origin'
 
   }).then(function (responses) {
-    return responses.json();
-
+    return responses.json()
   }).then(function (responsesJSON) {
-    var requestResponsePairs = responsesJSON.map(function (r, i) {
+    const requestResponsePairs = responsesJSON.map(function (r, i) {
       return {
         request: ledgerRequests[i],
-        response: responsesJSON[i],
-      };
-    });
-    return requestResponsePairs;
-
-  }).then(function removeInactiveAccounts(datas) {
-    var accounts = datas
-    .filter(function (data) {
-      return !!data.request.frequency;
+        response: responsesJSON[i]
+      }
     })
-    .map(function (data) {
-      return data.response.map(function (record) {
-        return record.account_name;
-      });
-    })
-    .reduce(function (a, b) {
-      return a.concat(b);
-    });
+    return requestResponsePairs
+  }).then(function removeInactiveAccounts (datas) {
+    const accounts = datas
+      .filter(function (data) {
+        return !!data.request.frequency
+      })
+      .map(function (data) {
+        return data.response.map(function (record) {
+          return record.account_name
+        })
+      })
+      .reduce(function (a, b) {
+        return a.concat(b)
+      })
 
-    var accounts_set = new Set(accounts);
+    const accounts_set = new Set(accounts)
     datas = datas.map(function (data) {
-      if (!!data.request.frequency) {
-        return data;
+      if (data.request.frequency) {
+        return data
       }
 
-      var filteredResponses = data.response
-      .filter(function (record) {
-        return accounts_set.has(record.account_name);
-      });
+      const filteredResponses = data.response
+        .filter(function (record) {
+          return accounts_set.has(record.account_name)
+        })
 
       return {
         request: data.request,
-        response: filteredResponses,
-      };
-    });
+        response: filteredResponses
+      }
+    })
 
-    return datas;
-
+    return datas
   }).then(_this.processData.bind(_this))
 
-  .catch(function (error) {
-    console.error(error);
-  });
-};
+    .catch(function (error) {
+      console.error(error)
+    })
+}
 
 Table.prototype.processData = function (convos) {
-  var data = convos.reduce(function (agg, convo) {
+  const data = convos.reduce(function (agg, convo) {
     if (convo.response && convo.request) {
-      var rows = convo.response.map(function (row) {
+      const rows = convo.response.map(function (row) {
         // Javascript date parsing funkiness requires forward slashes to set
         // the timezone correctly
-        var dateSlashes = row.date.replace(/-/g, '/');
+        const dateSlashes = row.date.replace(/-/g, '/')
         return {
           amount: row.amount,
           date: new Date(dateSlashes),
           account_name: row.account_name,
           frequency: convo.request.frequency || 'total',
-          budget: convo.request.args.every(function (e) { return e !== '--actual'; }),
-        };
-      });
-      return agg.concat(rows);
+          budget: convo.request.args.every(function (e) { return e !== '--actual' })
+        }
+      })
+      return agg.concat(rows)
     } else {
-      return agg;
+      return agg
     }
-  }, []);
+  }, [])
 
-  this.cache.set_data(data, 'data');
+  this.cache.set_data(data, 'data')
 
-  var tableParts = tableHTML.dataToPivottedTableParts({
-    data: data,
-    columnKeys: [ 'date', 'budget', 'frequency' ],
-    rowKeys: [ 'account_name' ],
-  });
+  const tableParts = tableHTML.dataToPivottedTableParts({
+    data,
+    columnKeys: ['date', 'budget', 'frequency'],
+    rowKeys: ['account_name']
+  })
 
-  var rowFormatter = function (r) {
-    var year_before_today = new Date(this.end_date);
-    year_before_today.setMonth(year_before_today.getMonth() - 12);
-    var chartOptions = {
+  const rowFormatter = function (r) {
+    const year_before_today = new Date(this.end_date)
+    year_before_today.setMonth(year_before_today.getMonth() - 12)
+    const chartOptions = {
       query: r.account_name,
       start_date: year_before_today.toLocaleDateString(),
       end_date: this.end_date.toLocaleDateString(),
-      frequency: 'monthly',
-    };
-    var linkOptions = Object.keys(chartOptions).map(function (k) {
-      return k + '=' + encodeURIComponent(chartOptions[k]);
-    }).join('&');
-    var linkHref = 'chart.html?' + linkOptions;
-    var linkValue = '<a href="' + linkHref + '">' + r.account_name + '</a>';
+      frequency: 'monthly'
+    }
+    const linkOptions = Object.keys(chartOptions).map(function (k) {
+      return k + '=' + encodeURIComponent(chartOptions[k])
+    }).join('&')
+    const linkHref = 'chart.html?' + linkOptions
+    const linkValue = '<a href="' + linkHref + '">' + r.account_name + '</a>'
     return {
-      value: linkValue,
-    };
-  };
+      value: linkValue
+    }
+  }
 
-  var columnFormatter = function (c) {
+  const columnFormatter = function (c) {
     return {
-      value: c.date.toLocaleDateString() + (c.budget ? '\nbudget' : '') + '\n' + c.frequency,
-    };
-  };
+      value: c.date.toLocaleDateString() + (c.budget ? '\nbudget' : '') + '\n' + c.frequency
+    }
+  }
 
-  var dataFormatter = function (d) {
-    var formattedData = {
-      value: '',
-    };
+  const dataFormatter = function (d) {
+    const formattedData = {
+      value: ''
+    }
 
     if (d && d.amount) {
-      formattedData.value = d.amount.toFixed(2);
+      formattedData.value = d.amount.toFixed(2)
     }
 
     if (d && d.amount && d.budget) {
       formattedData.attributes = {
-        class: d.amount < 0 ? 'success' : 'danger',
-      };
+        class: d.amount < 0 ? 'success' : 'danger'
+      }
     }
 
-    return formattedData;
-  };
+    return formattedData
+  }
 
-  var table = tableHTML.tablePartsToTable({
-    tableParts: tableParts,
+  const table = tableHTML.tablePartsToTable({
+    tableParts,
     formatterParts: {
       row: rowFormatter.bind(this),
       column: columnFormatter,
-      data: dataFormatter,
-    },
-  });
+      data: dataFormatter
+    }
+  })
 
-  var tableClasses = 'table table-striped table-hover table-bordered table-condensed';
-  var HTML = tableHTML.tableToHTML(table, tableClasses);
-  document.getElementById('thetable').innerHTML = HTML;
-};
+  const tableClasses = 'table table-striped table-hover table-bordered table-condensed'
+  const HTML = tableHTML.tableToHTML(table, tableClasses)
+  document.getElementById('thetable').innerHTML = HTML
+}
 
 Table.prototype.downloadCSV = function () {
-  var data = this.cache.get_data('data') || [];
-  var filename = 'export.csv';
+  const data = this.cache.get_data('data') || []
+  const filename = 'export.csv'
 
-  var tableData = recordsCSV.dataToTable(data);
-  var csvData = recordsCSV.tableToCSV(tableData);
-  var csvString = 'data:text/csv;charset=utf-8,' + csvData;
+  const tableData = recordsCSV.dataToTable(data)
+  const csvData = recordsCSV.tableToCSV(tableData)
+  const csvString = 'data:text/csv;charset=utf-8,' + csvData
 
-  var link = document.createElement('a');
-  link.setAttribute('href', encodeURI(csvString));
-  link.setAttribute('download', filename);
-  link.click();
-  link.remove();
-};
+  const link = document.createElement('a')
+  link.setAttribute('href', encodeURI(csvString))
+  link.setAttribute('download', filename)
+  link.click()
+  link.remove()
+}
 
-var recordsCSV = {};
+const recordsCSV = {}
 
 /**
  * Input:
@@ -283,21 +280,21 @@ var recordsCSV = {};
  *  ]
  */
 recordsCSV.dataToTable = function (data) {
-  var keys = new Set();
+  const keys = new Set()
   data.forEach(function (obj) {
     Object.keys(obj).forEach(function (key) {
-      keys.add(key);
-    });
-  });
+      keys.add(key)
+    })
+  })
 
-  var headers = Array.from(keys.keys());
-  var table = data.reduce(function (agg, rowObj) {
-    var rowArray = headers.map(function (h) { return rowObj[h] || null; });
-    return agg.concat([ rowArray ]);
-  }, [ headers ]);
+  const headers = Array.from(keys.keys())
+  const table = data.reduce(function (agg, rowObj) {
+    const rowArray = headers.map(function (h) { return rowObj[h] || null })
+    return agg.concat([rowArray])
+  }, [headers])
 
-  return table;
-};
+  return table
+}
 
 /**
  * Input:
@@ -311,16 +308,16 @@ recordsCSV.dataToTable = function (data) {
  *  'key1,key2,key3\na,b,,\n...'
  */
 recordsCSV.tableToCSV = function (table) {
-  var csv = table.map(function (row) {
+  const csv = table.map(function (row) {
     return row.map(function (r) {
-      return r === null ? '' : r.toString();
-    }).join(',');
-  }).join('\n');
+      return r === null ? '' : r.toString()
+    }).join(',')
+  }).join('\n')
 
-  return csv;
-};
+  return csv
+}
 
-var tableHTML = {};
+const tableHTML = {}
 
 /**
  * Input:
@@ -338,17 +335,17 @@ var tableHTML = {};
  *  ]
  */
 tableHTML.extractKeys = function (data, keys) {
-  var keysSet = new ObjectSet();
+  const keysSet = new ObjectSet()
   data.forEach(function (row) {
-    var key = {};
-    keys.map(function (k) {
-      key[k] = row[k];
-    });
-    keysSet.add(key);
-  });
-  var keysArray = Array.from(keysSet.keys());
-  return keysArray;
-};
+    const key = {}
+    keys.forEach(function (k) {
+      key[k] = row[k]
+    })
+    keysSet.add(key)
+  })
+  const keysArray = Array.from(keysSet.keys())
+  return keysArray
+}
 
 /**
  * Compare a and b by property in order of keys.
@@ -359,20 +356,20 @@ tableHTML.extractKeys = function (data, keys) {
  *  b - object
  */
 tableHTML.sortByComparator = function (keys, a, b) {
-  var keysCopy = keys.slice();   // shallow copy
-  var sortKey = keysCopy.shift();
+  const keysCopy = keys.slice() // shallow copy
+  const sortKey = keysCopy.shift()
   if (sortKey) {
     if (a[sortKey] < b[sortKey]) {
-      return -1;
+      return -1
     } else if (a[sortKey] > b[sortKey]) {
-      return 1;
+      return 1
     } else {
-      return tableHTML.sortByComparator(keysCopy, a, b);
+      return tableHTML.sortByComparator(keysCopy, a, b)
     }
   } else {
-    return 0;
+    return 0
   }
-};
+}
 
 /**
  * Input:
@@ -407,41 +404,41 @@ tableHTML.sortByComparator = function (keys, a, b) {
  *  }
  */
 tableHTML.dataToPivottedTableParts = function (args) {
-  var columnHeaders = tableHTML.extractKeys(args.data, args.columnKeys);
+  const columnHeaders = tableHTML.extractKeys(args.data, args.columnKeys)
   columnHeaders.sort(function (a, b) {
-    return tableHTML.sortByComparator(args.columnKeys, a, b);
-  });
-  var rowHeaders = tableHTML.extractKeys(args.data, args.rowKeys);
+    return tableHTML.sortByComparator(args.columnKeys, a, b)
+  })
+  const rowHeaders = tableHTML.extractKeys(args.data, args.rowKeys)
   rowHeaders.sort(function (a, b) {
-    return tableHTML.sortByComparator(args.rowKeys, a, b);
-  });
+    return tableHTML.sortByComparator(args.rowKeys, a, b)
+  })
 
-  var filterData = function (data, header) {
-    var filteredData = data.filter(function (d) {
+  const filterData = function (data, header) {
+    const filteredData = data.filter(function (d) {
       return Object.keys(header).every(function (k) {
-        return JSON.stringify(header[k]) === JSON.stringify(d[k]);
-      });
-    });
-    return filteredData;
-  };
-  var tableData = rowHeaders.map(function (rowHeader) {
-    var rowData = filterData(args.data, rowHeader);
-    var row = columnHeaders.map(function (columnHeader) {
-      var columnData = filterData(rowData, columnHeader);
+        return JSON.stringify(header[k]) === JSON.stringify(d[k])
+      })
+    })
+    return filteredData
+  }
+  const tableData = rowHeaders.map(function (rowHeader) {
+    const rowData = filterData(args.data, rowHeader)
+    const row = columnHeaders.map(function (columnHeader) {
+      const columnData = filterData(rowData, columnHeader)
       if (columnData.length > 1) {
         console.error('More than one entry found for row: ' + JSON.stringify(rowHeader) +
-          ', column: ' + JSON.stringify(columnHeader) + '. Using first match.');
+          ', column: ' + JSON.stringify(columnHeader) + '. Using first match.')
       }
-      return columnData[0];
-    });
-    return row;
-  });
+      return columnData[0]
+    })
+    return row
+  })
   return {
     rows: rowHeaders,
     columns: columnHeaders,
-    data: tableData,
-  };
-};
+    data: tableData
+  }
+}
 
 /**
  * Input:
@@ -477,14 +474,14 @@ tableHTML.dataToPivottedTableParts = function (args) {
  *  ]
  */
 tableHTML.tablePartsToTable = function (args) {
-  var headerRow = [ '' ].concat(args.tableParts.columns.map(args.formatterParts.column));
-  var dataRows = args.tableParts.rows.map(function (r, i) {
-    var formatted = args.tableParts.data[i].map(args.formatterParts.data);
-    return [ args.formatterParts.row(r) ].concat(formatted);
-  });
-  var table = [ headerRow ].concat(dataRows);
-  return table;
-};
+  const headerRow = [''].concat(args.tableParts.columns.map(args.formatterParts.column))
+  const dataRows = args.tableParts.rows.map(function (r, i) {
+    const formatted = args.tableParts.data[i].map(args.formatterParts.data)
+    return [args.formatterParts.row(r)].concat(formatted)
+  })
+  const table = [headerRow].concat(dataRows)
+  return table
+}
 
 /**
  * Input:
@@ -499,16 +496,16 @@ tableHTML.tablePartsToTable = function (args) {
  *
  */
 tableHTML.makeTag = function (tag, value, attributes) {
-  var attributesString = '';
+  let attributesString = ''
   if (attributes) {
     attributesString = Object.keys(attributes).map(function (k) {
-      return ' ' + k + '="' + attributes[k] + '"';
-    }).join('');
+      return ' ' + k + '="' + attributes[k] + '"'
+    }).join('')
   }
-  var valueString = value || '';
-  var tagBlock = '<' + tag + attributesString + '>' + valueString + '</' + tag + '>';
-  return tagBlock;
-};
+  const valueString = value || ''
+  const tagBlock = '<' + tag + attributesString + '>' + valueString + '</' + tag + '>'
+  return tagBlock
+}
 
 /**
  * Input:
@@ -533,23 +530,23 @@ tableHTML.makeTag = function (tag, value, attributes) {
  * </table>
  */
 tableHTML.tableToHTML = function (table, tableClasses) {
-  var HTML =
+  const HTML =
     '<table class="' + tableClasses + '">\n' +
     table.map(function (row) {
-      var rowHTML =
+      const rowHTML =
         '\t<tr>\n' +
         row.map(function (c) {
-          return '\t\t' + tableHTML.makeTag('td', c.value, c.attributes) + '\n';
+          return '\t\t' + tableHTML.makeTag('td', c.value, c.attributes) + '\n'
         }).join('') +
-        '\t</tr>\n';
-      return rowHTML;
+        '\t</tr>\n'
+      return rowHTML
     }).join('') +
-    '\n</table>';
-  return HTML;
-};
+    '\n</table>'
+  return HTML
+}
 
-var monthsBefore = function (today, months) {
-  var before_today = new Date(today);
-  before_today.setMonth(before_today.getMonth() - months);
-  return before_today;
-};
+const monthsBefore = function (today, months) {
+  const before_today = new Date(today)
+  before_today.setMonth(before_today.getMonth() - months)
+  return before_today
+}
